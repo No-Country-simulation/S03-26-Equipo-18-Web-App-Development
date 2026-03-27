@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  --background: #008F68;
+  --foreground: #D9D9D9;
+}
+
+@theme {
+  /* Definimos colores de Figma como variables de Tailwind */
+  --color-brand: #008F68;    /* Verde Esmeralda */
+  --color-dark: #595959;     /* Gris Oscuro */
+  --color-medium: #757575;   /* Gris Medio */
+  --color-chalk: #D9D9D9;    /* Tiza */
+}
+
+body {
+  background: var(--background);
+  color: var(--color-dark);
+  font-family: Roboto, Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+@layer components {
+  /* Botón Principal: Verde Esmeralda (#008F68) */
+  .btn-primary {
+    @apply px-4 py-2 bg-brand text-white rounded-lg hover:opacity-90 transition-all font-medium shadow-sm active:scale-95;
+  }
+  
+  /* Botón Secundario o de Fondo Tiza */
+  .btn-secondary {
+    @apply px-4 py-2 bg-chalk text-dark rounded-lg hover:bg-gray-300 transition-all font-medium;
+  }
+
+  /* Badge Pendiente: Usamos un tono suave de tu Gris Medio para no distraer */
+  .badge-pending {
+    @apply px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-medium border border-chalk/20;
+  }
+
+  /* Badge Aprobado: Verde Esmeralda en versión suave */
+  .badge-approved {
+    @apply px-2.5 py-0.5 rounded-full text-xs font-bold bg-brand/10 text-brand border border-brand/20;
+  }
+
+  /* Badge Rechazado: Un rojo sutil para contrastar con tu paleta */
+  .badge-rejected {
+    @apply px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-600 border border-red-100;
+  }
+
+  .title-page{
+    @apply text-2xl font-bold text-black mb-6;
+  }
+
+  .title-description{
+    @apply text-base text-white mb-4;
+  }
+}
+

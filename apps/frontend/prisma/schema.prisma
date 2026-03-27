@@ -1,0 +1,35 @@
+datasource db {
+  provider = "sqlite" // Aquí cambias a "mysql" o "sqlite" si usas otro
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model EdTech {
+  id        String   @id @default(cuid()) // 🆔 Identificador único autogenerado
+  name      String   // 📛 Nombre de la institución (ej. NoCountry)
+  slug      String   @unique // 🔗 Nombre para la URL (ej. "nocountry")
+  apiKey    String   @unique @default(uuid()) // 🔑 Llave para la API pública
+  createdAt DateTime @default(now()) // 📅 Fecha de registro automático
+  testimonials Testimonial[]
+}
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  userName    String   // Nombre del alumno
+  content     String   // El texto del testimonio
+  rating      Int      @default(5) // Estrellas
+
+  //Valores: 'PENDING', 'APPROVED', 'REJECTED'
+  status      String   @default("PENDING")
+  videoUrl    String?
+  //proveedor de video("YOUTUBE","CLOUDINARY","NONE")
+  videoProvider String @default("NONE")
+  createdAt   DateTime @default(now()) 
+  
+  // Conexión con la EdTech
+  edTech      EdTech   @relation(fields: [edTechId], references: [id])
+  edTechId    String
+}
