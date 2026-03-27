@@ -141,3 +141,27 @@ Este proyecto está en desarrollo y la estructura inicial del backend ya está p
 - upload
 - analytics
 - api pública
+
+
+## Base de datos y pgAdmin
+
+La base de datos se ejecuta dentro de Docker con PostgreSQL.  
+Para visualizar las tablas sin instalar PostgreSQL en tu máquina, se incluye un contenedor de pgAdmin accesible en el navegador.
+
+### Cómo usar pgAdmin
+
+1. Levanta el stack:
+   docker compose up -d
+2. Abre en el navegador:
+   http://localhost:5050
+3. Inicia sesión con:
+   - Email: example@example.com
+   - Password: any_password
+4. Crea una nueva conexión:
+   - Host: host_example
+   - Port: number_port_db
+   - Username: user_example
+   - Password: any_password
+   - Database: db_name
+
+Desde ahí podrás visualizar todas las tablas del modelo de datos (usuarios, testimonios, categorías, tags, etc.).
