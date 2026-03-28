@@ -7,21 +7,37 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model EdTech {
-  id        String   @id @default(cuid()) // 🆔 Identificador único autogenerado
-  name      String   // 📛 Nombre de la institución (ej. NoCountry)
-  slug      String   @unique // 🔗 Nombre para la URL (ej. "nocountry")
-  apiKey    String   @unique @default(uuid()) // 🔑 Llave para la API pública
-  createdAt DateTime @default(now()) // 📅 Fecha de registro automático
+model User {
+  id           String   @id @default(cuid())
+  username     String?
+  email        String   @unique
+  password     String
+  role         String   @default("ADMIN") // 'ADMIN', 'EDITOR', etc.
+  active       Boolean  @default(true)
+  apiKey       String   @unique @default(uuid()) // La llave para su API
+  instituto    String?  // El nombre de la institución (ex EdTech.name)
+  createdAt    DateTime @default(now())
+  testimonials Testimonial[]
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  testimonials Testimonial[]
+}
+
+model Tag{
+  id        String   @id @default(cuid())
+  name      String   @unique
   testimonials Testimonial[]
 }
 
 model Testimonial {
   id          String   @id @default(cuid())
-  userName    String   // Nombre del alumno
+  userName    String   // Nombre del usuario
   content     String   // El texto del testimonio
   rating      Int      @default(5) // Estrellas
-
+  location    String   @default("")
   //Valores: 'PENDING', 'APPROVED', 'REJECTED'
   status      String   @default("PENDING")
   videoUrl    String?
@@ -30,6 +46,13 @@ model Testimonial {
   createdAt   DateTime @default(now()) 
   
   // Conexión con la EdTech
-  edTech      EdTech   @relation(fields: [edTechId], references: [id])
-  edTechId    String
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String
+
+  // RELACIÓN CON CATEGORY (Uno a Muchos)
+  category      Category @relation(fields: [categoryId], references: [id])
+  categoryId    String
+
+  // RELACIÓN CON TAGS (Muchos a Muchos)
+  tags          Tag[]
 }
