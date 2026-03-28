@@ -18,9 +18,9 @@ interface TestimonialCardProps {
 
 const getStatusClass = (status: string) => {
   switch (status) {
-    case "APPROVED":
+    case "APROBADO":
       return "badge-approved";
-    case "REJECTED":
+    case "RECHAZADO":
       return "badge-rejected";
     default:
       return "badge-pending";

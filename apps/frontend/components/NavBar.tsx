@@ -22,11 +22,6 @@ const NavBar = ({ isCollapsed }: Props) => {
             <NavBarItem 
                 href="/dashboard/testimonials" 
                 icon={<MdMessage />}
-                label="Testimonios" 
-                />
-            <NavBarItem 
-                href="/dashboard/moderation"        
-                icon={<MdAddModerator />}
                 label="Moderación" 
                 isCollapsed={isCollapsed}/>
 
