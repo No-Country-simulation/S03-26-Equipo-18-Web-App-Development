@@ -7,7 +7,7 @@ const Moderation = async() => {
   // Traemos todos los testimonios de la DB
   const testimonials = await prisma.testimonial.findMany({
     orderBy: { createdAt: "desc" },
-    include: { edTech: true }
+    include: { user: true }
   });
 
   return (

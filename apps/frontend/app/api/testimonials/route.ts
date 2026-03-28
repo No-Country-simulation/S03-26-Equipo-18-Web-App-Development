@@ -16,24 +16,28 @@ export async function GET(request: Request) {
     // 2. Buscamos los testimonios que pertenecen a la EdTech con esa API Key
     const testimonials = await prisma.testimonial.findMany({
       where: {
-        edTech: {
+        user: {
           apiKey: apiKey, // Solo trae los que coincidan con la llave
+          role: "ADMIN"
         },
-        //Filtro: sólo se van a mostrar los testimonios aprovados
-        status: "APPROVED",
+        //Filtro: sólo se van a mostrar los testimonios aprobados
+        status: "APROBADO",
       },
       select: {
         id: true,
         userName: true,
         content: true,
         rating: true,
+        location: true,
+        category: true,
+        tags: true,
         videoUrl: true,
         videoProvider: true,
         createdAt: true,
         // Traemos la EdTech, pero SOLO su nombre
-        edTech: {
+        user: {
           select: {
-            name: true
+            instituto: true
           }
         }
       },
