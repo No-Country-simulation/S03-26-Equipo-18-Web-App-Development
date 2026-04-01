@@ -40,13 +40,13 @@ const LoginPage = () => {
 
     return(
 // Contenedor principal: Ocupa todo el alto de la pantalla
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+    <div className="bg-white min-h-screen grid grid-cols-1 lg:grid-cols-2">
       
       {/* SECCIÓN IZQUIERDA: Branding (Solo visible en pantallas grandes LG) */}
-      <div className="hidden lg:flex flex-col items-center justify-center bg-brand p-12 text-white">
+      <div className="hidden lg:flex flex-col items-center justify-center bg-black/90 rounded-l-4xl p-12 text-white">
         <div className="max-w-sm text-center">
           {/* Logo en blanco para que resalte sobre el verde */}
-          <div className="bg-white p-8 rounded-3xl shadow-2xl mb-8 inline-block">
+          <div className="mb-8 inline-block">
             <Image 
               src="/image/logo/logo.png" 
               alt="Testimonial CMS Logo" 
@@ -63,7 +63,7 @@ const LoginPage = () => {
       </div>
 
       {/* SECCIÓN DERECHA: Formulario */}
-      <div className="flex items-center justify-center bg-chalk p-8 lg:p-20">
+      <div className="flex items-center justify-center bg-chalk rounded-r-4xl p-8 lg:p-20">
         <div className="w-full max-w-100">
           
           {/* Header del Formulario */}

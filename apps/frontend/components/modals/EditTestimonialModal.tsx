@@ -1,8 +1,8 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { MdClose, MdSave, MdCategory, MdLabel, MdCheckCircle } from "react-icons/md";
-import { updateTestimonialAction } from "@/app/_actions/testimonial-actions";
-import { useEffect, useState } from "react";
+import { updateTestimonialAction } from "@/lib/actions/testimonial-actions";
+import { useEffect } from "react";
 
 
 interface Tag {
