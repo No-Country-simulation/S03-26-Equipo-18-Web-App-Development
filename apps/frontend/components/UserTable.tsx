@@ -52,7 +52,7 @@ const UserTable = ({users} : {users: UserFromDB[]}) => {
                 <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="p-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-brand/10 text-brand flex items-center justify-center font-bold text-sm border border-brand/20">
+                      <div className="w-10 h-10 rounded-full bg-brand/10 text-primary flex items-center justify-center font-bold text-sm border border-brand/20">
                         {user.username ? user.username.substring(0, 2).toUpperCase() : "U"}
                       </div>
                       <span className="font-semibold text-dark">{user.username || "Sin nombre"}</span>
@@ -61,7 +61,7 @@ const UserTable = ({users} : {users: UserFromDB[]}) => {
                   <td className="p-4 text-medium">{user.email}</td>
                   <td className="p-4">
                     <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold ${
-                      user.role === 'ADMIN' ? 'bg-brand text-white' : 'bg-chalk text-dark'
+                      user.role === 'ADMIN' ? 'bg-primary text-dark' : 'bg-dark text-txtSecondary'
                     }`}>
                       {user.role === 'ADMIN' && <MdShield size={10} />}
                       {user.role}

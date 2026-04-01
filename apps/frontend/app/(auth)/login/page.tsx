@@ -40,36 +40,36 @@ const LoginPage = () => {
 
     return(
 // Contenedor principal: Ocupa todo el alto de la pantalla
-    <div className="bg-white min-h-screen grid grid-cols-1 lg:grid-cols-2">
+    <div className="bg-txtPrimary min-h-screen grid grid-cols-1 lg:grid-cols-2">
       
       {/* SECCIÓN IZQUIERDA: Branding (Solo visible en pantallas grandes LG) */}
-      <div className="hidden lg:flex flex-col items-center justify-center bg-black/90 rounded-l-4xl p-12 text-white">
+      <div className="hidden lg:flex flex-col items-center justify-center bg-dark rounded-l-4xl p-12 text-txtPrimary">
         <div className="max-w-sm text-center">
           {/* Logo en blanco para que resalte sobre el verde */}
-          <div className="mb-8 inline-block">
+          <div className="inline-block">
             <Image 
               src="/image/logo/logo.png" 
-              alt="Testimonial CMS Logo" 
-              width={180} 
-              height={180} 
+              alt="Logo NoStories" 
+              width={500} 
+              height={500} 
               priority
             />
           </div>
-          <h2 className="text-3xl font-bold mb-4">Testimonial CMS</h2>
-          <p className="text-white/80 text-lg">
+          <h2 className="text-3xl font-bold mb-4">Son testimonios. Fin</h2>
+          <p className="text-txtPrimary text-lg">
             Gestiona, modera y distribuye testimonios de tu institución desde un solo lugar.
           </p>
         </div>
       </div>
 
       {/* SECCIÓN DERECHA: Formulario */}
-      <div className="flex items-center justify-center bg-chalk rounded-r-4xl p-8 lg:p-20">
+      <div className="flex items-center justify-center bg-txtSecondary rounded-r-4xl p-8 lg:p-20">
         <div className="w-full max-w-100">
           
           {/* Header del Formulario */}
           <div className="mb-10">
             <h1 className="text-3xl font-bold text-dark mb-2">Iniciar sesión</h1>
-            <p className="text-medium text-sm">Ingresa tus credenciales para acceder al panel</p>
+            <p className="text-txtSecondary text-sm">Ingresa tus credenciales para acceder al panel</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -77,13 +77,13 @@ const LoginPage = () => {
             <div className="space-y-2">
               <label className="text-sm font-semibold text-dark ml-1">Correo electrónico</label>
               <div className="relative">
-                <MdEmail className={`absolute left-4 top-1/2 -translate-y-1/2 text-xl ${errors.email ? 'text-red-500' : 'text-medium'}`} />
+                <MdEmail className={`absolute left-4 top-1/2 -translate-y-1/2 text-xl ${errors.email ? 'text-red-500' : 'text-txtSecondary'}`} />
                 <input 
                   {...register("email")}
                   type="email" 
                   placeholder="janedoe@edutech.com"
-                  className={`w-full pl-12 pr-4 py-3.5 bg-white rounded-xl border-2 transition-all outline-none ${
-                    errors.email ? 'border-red-500 shadow-sm shadow-red-100' : 'border-transparent focus:border-brand shadow-sm'
+                  className={`w-full pl-12 pr-4 py-3.5 bg-dark rounded-xl border-2 transition-all outline-none ${
+                    errors.email ? 'border-red-500 shadow-sm shadow-red-100' : 'border-transparent focus:border-primary shadow-sm'
                   }`}
                 />
               </div>
@@ -99,8 +99,8 @@ const LoginPage = () => {
                   {...register("password")}
                   type="password" 
                   placeholder="********"
-                  className={`w-full pl-12 pr-4 py-3.5 bg-white rounded-xl border-2 transition-all outline-none ${
-                    errors.password ? 'border-red-500 shadow-sm shadow-red-100' : 'border-transparent focus:border-brand shadow-sm'
+                  className={`w-full pl-12 pr-4 py-3.5 bg-dark rounded-xl border-2 transition-all outline-none ${
+                    errors.password ? 'border-red-500 shadow-sm shadow-red-100' : 'border-transparent focus:border-primary shadow-sm'
                   }`}
                 />
               </div>
@@ -109,7 +109,7 @@ const LoginPage = () => {
 
             <button 
               disabled={isSubmitting}
-              className="w-full bg-brand hover:bg-brand/70 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-[0.98] uppercase tracking-wide mt-4"
+              className="w-full bg-primary hover:bg-primary/70 text-txtPrimary font-bold py-4 rounded-xl shadow-lg transition-all active:scale-[0.98] uppercase tracking-wide mt-4"
             >
               {isSubmitting ? "Cargando..." : "Ingresar"}
             </button>

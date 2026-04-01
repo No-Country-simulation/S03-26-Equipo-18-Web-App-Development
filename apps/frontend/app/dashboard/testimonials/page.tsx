@@ -55,26 +55,6 @@ const Testimonials = async (
     };
   }
 
-  // const testimonials = await prisma.testimonial.findMany({
-  //   where: {
-  //     // Filtro inteligente: busca en nombre, contenido o nombre del tag
-  //     OR: [
-  //       { userName: { contains: query } },
-  //       { content: { contains: query } },
-  //       { status: { contains: query } },
-  //       { category: { name: { contains: query } } },
-  //       { tags: { some: { name: { contains: query } } } },
-  //     ],
-  //   },
-  //   include: {
-  //     tags: true,
-  //     category: true,
-  //     user: true,
-  //   },
-  //   orderBy: { createdAt: "desc" },
-  // });  
-  
-
 
 console.log("--- DEBUG MODERACIÓN ---");
 console.log("Query de texto:", query);
@@ -98,10 +78,10 @@ console.log("Objeto WHERE que enviamos a Prisma:", JSON.stringify(finalWhere, nu
   return (
     <div>
       <TituloPage 
-          titulo="Panel de Moderación" 
+          titulo="Gestor de Testimonios" 
           descripcion={query 
-          ? `Resultados para "${query}": ${testimonials.length}` 
-          :`${testimonials.length} testimonios en total`} />
+          ? `Gestione y edite los resultados para "${query}": ${testimonials.length}` 
+          :`Edite y modere ${testimonials.length} testimonios en total`} />
 
       <StatusFilters />      
 

@@ -33,7 +33,7 @@ const BtnNewUser = ({ adminInstituto }: Props ) => {
 <>
       <button 
         onClick={() => setIsModalOpen(true)}
-        className="btn-secondary flex items-center gap-2 hover:bg-dark/50 hover:text-white"
+        className="btn-primary flex items-center gap-2 hover:bg-txtPrimary hover:text-primary transition-all"
       >
         <MdAdd size={24} />
         Nuevo usuario

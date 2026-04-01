@@ -1,13 +1,97 @@
+import { prisma } from "@/lib/prisma";
 import TituloPage from "@/components/tituloPage";
-
-
+import StatCard from "@/components/StatCard";
+import { 
+  MdChatBubbleOutline, 
+  MdCheckCircleOutline, 
+  MdAccessTime, 
+  MdHighlightOff, 
+  MdRemoveRedEye, 
+  MdTouchApp, 
+  MdOutlineStarBorder, 
+  MdAutoGraph 
+} from "react-icons/md";
 
 export default async function DashboardPage() {
+  const adminInstituto = "No-Country"; // Luego vendrá de la sesión
 
+  // Consultas reales a Prisma
+  const totalTestimonios = await prisma.testimonial.count({
+    where: { instituto: adminInstituto }
+  });
+
+  const aprobados = await prisma.testimonial.count({
+    where: { instituto: adminInstituto, status: "APROBADO" }
+  });
+
+  const pendientes = await prisma.testimonial.count({
+    where: { instituto: adminInstituto, status: "PENDIENTE" }
+  });
+
+  const rechazados = await prisma.testimonial.count({
+    where: { instituto: adminInstituto, status: "RECHAZADO" }
+  });
 
   return (
-    <div>
-      <TituloPage titulo="Dashboard" descripcion="Resumen general de tu CMS de testimonios." />
+    <div className="p-8">
+      <TituloPage 
+        titulo="Dashboard" 
+        descripcion="Bienvenido de vuelta. Esto es lo que está pasando con tus testimonios" 
+      />
+
+      {/* Grid de tarjetas: 1 columna en móvil, 2 en tablet, 4 en desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
+        <StatCard 
+          title="Total testimonios" 
+          value={totalTestimonios} 
+          icon={MdChatBubbleOutline} 
+          iconColor="text-brand" 
+        />
+        <StatCard 
+          title="Aprobados" 
+          value={aprobados} 
+          icon={MdCheckCircleOutline} 
+          iconColor="text-green-600" 
+        />
+        <StatCard 
+          title="Pendientes" 
+          value={pendientes} 
+          icon={MdAccessTime} 
+          iconColor="text-yellow-500" 
+        />
+        <StatCard 
+          title="Rechazados" 
+          value={rechazados} 
+          icon={MdHighlightOff} 
+          iconColor="text-red-500" 
+        />
+        
+        {/* Estas métricas las simularemos por ahora (son de engagement) */}
+        <StatCard 
+          title="Vistas totales" 
+          value="3670" 
+          icon={MdRemoveRedEye} 
+          iconColor="text-blue-500" 
+        />
+        <StatCard 
+          title="Clicks totales" 
+          value="249" 
+          icon={MdTouchApp} 
+          iconColor="text-brand" 
+        />
+        <StatCard 
+          title="Rating promedio" 
+          value="4.1" 
+          icon={MdOutlineStarBorder} 
+          iconColor="text-orange-400" 
+        />
+        <StatCard 
+          title="Destacados" 
+          value="2" 
+          icon={MdAutoGraph} 
+          iconColor="text-purple-500" 
+        />
+      </div>
     </div>
   );
 }

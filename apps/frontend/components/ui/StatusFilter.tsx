@@ -27,15 +27,15 @@ export const StatusFilters = () => {
   };
 
   return (
-    <div className="flex p-1 bg-chalk rounded-2xl w-fit mb-6 border border-gray-100">
+    <div className="flex min-w-75 justify-center items-center p-1 bg-txtPrimary rounded-2xl w-fit mb-6 border border-border">
       {statuses.map((s) => (
         <button
           key={s.value}
           onClick={() => handleFilter(s.value)}
-          className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all ${
+          className={`w-full px-6 py-2.5 rounded-xl text-lg font-bold transition-all ${
             currentStatus === s.value
-              ? "bg-white text-brand shadow-sm"
-              : "text-medium hover:text-dark"
+              ? "bg-sidebar text-primary shadow-sm"
+              : "text-txtSecondary hover:text-dark"
           }`}
         >
           {s.label}

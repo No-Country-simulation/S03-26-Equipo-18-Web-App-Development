@@ -91,10 +91,10 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
         <div className="bg-white w-full max-w-lg rounded-4xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
             
             {/* HEADER DEL MODAL */}
-            <div className="bg-brand p-6 text-white flex justify-between items-center">
+            <div className="bg-dark p-6 text-primary flex justify-between items-center">
             <div>
-                <h2 className="text-xl font-bold">Gestionar Testimonio</h2>
-                <p className="text-white/80 text-xs uppercase font-semibold mt-1">
+                <h2 className="text-2xl font-bold">Gestionar Testimonio</h2>
+                <p className="text-txtPrimary text-m uppercase font-semibold mt-1">
                 De: {testimonial.userName}
                 </p>
             </div>
@@ -108,11 +108,11 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
                 {/* CAMPO: STATUS */}
                 <div className="space-y-3">
                     <label className="flex items-center gap-2 text-xs font-bold text-dark uppercase tracking-widest">
-                    <MdCheckCircle className="text-brand" /> Estado del Testimonio
+                    <MdCheckCircle className="text-primary" /> Estado del Testimonio
                     </label>
                     <select 
                     {...register("status")}
-                    className="w-full p-4 bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-brand outline-none text-sm font-semibold"
+                    className="w-full p-4 bg-txtSecondary rounded-2xl border-none focus:ring-2 focus:ring-primary outline-none text-sm font-semibold"
                     >
                     <option value="PENDIENTE">🕒 Pendiente de Revisión</option>
                     <option value="APROBADO">✅ Aprobado para Publicar</option>
@@ -123,11 +123,11 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
                 {/* CAMPO: CATEGORÍA */}
                 <div className="space-y-3">
                     <label className="flex items-center gap-2 text-xs font-bold text-dark uppercase tracking-widest">
-                    <MdCategory className="text-brand" /> Categoría Asignada
+                    <MdCategory className="text-primary" /> Categoría Asignada
                     </label>
                     <select 
                     {...register("categoryId")}
-                    className="w-full p-4 bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-brand outline-none text-sm font-semibold"
+                    className="w-full p-4 bg-txtSecondary rounded-2xl border-none focus:ring-2 focus:ring-primary outline-none text-sm font-semibold"
                     >
                     {categories.map((cat) => (
                         <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -139,20 +139,20 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
                 {/* SECCIÓN DE TAGS EXISTENTES */}
                 <div className="space-y-3">
                     <label className="text-xs font-bold uppercase flex items-center gap-2 text-dark/60">
-                        <MdLabel className="text-brand"/> Seleccionar Tags Existentes
+                        <MdLabel className="text-primary"/> Seleccionar Tags Existentes
                     </label>
-                    <div className="grid grid-cols-2 gap-2 p-4 bg-chalk rounded-2xl border border-gray-100 max-h-40 overflow-y-auto">
+                    <div className="grid grid-cols-2 gap-2 p-4 bg-txtPrimary rounded-2xl border border-border max-h-40 overflow-y-auto">
                         {allTags && allTags.length > 0 ? (
                             allTags.map((tag: any) => (
                                 <label 
                                 key={tag.id} 
-                                className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-gray-100 cursor-pointer hover:border-brand/50 transition-all"
+                                className="flex items-center gap-2 px-3 py-2 bg-txtSecondary rounded-xl border border-border cursor-pointer hover:border-primary/50 transition-all"
                                 >
                                 <input 
                                     type="checkbox" 
                                     value={tag.id} 
                                     {...register("tagIds")}
-                                    className="w-4 h-4 accent-brand"
+                                    className="w-4 h-4 accent-primary"
                                 />
                                 <span className="text-[11px] font-bold text-dark/70 uppercase">
                                     {tag.name}
@@ -167,20 +167,20 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
 
                 {/* NUEVOS TAGS (CAMPO DE TEXTO) */}
                 <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-medium">
+                <label className="text-[10px] font-black uppercase text-txtSecondary flex items-center gap-2">
                     ¿Crear nuevos tags? (separar por comas)
                 </label>
                 <input 
                     type="text"
                     placeholder="Ej: REACT, CURSO 2024, AVANZADO"
                     {...register("newTagsRaw")}
-                    className="w-full p-4 bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-brand outline-none text-sm font-semibold placeholder:text-dark/30"
+                    className="w-full p-4 bg-txtPrimary rounded-2xl border-none focus:ring-2 focus:ring-primary outline-none text-sm font-semibold placeholder:text-dark/30"
                 />
                 </div>           
 
                 {/* INFO: El contenido no es editable por ética */}
-                <div className="p-4 bg-chalk/50 rounded-2xl border border-dashed border-medium/30">
-                    <label className="block text-[10px] font-black text-medium uppercase mb-2">Contenido (Sólo lectura)</label>
+                <div className="p-4 bg-txtPrimary rounded-2xl border border-dashed border-border">
+                    <label className="block text-[10px] font-black text-txtSecondary uppercase mb-2">Contenido (Sólo lectura)</label>
                     <p className="text-xs text-dark/70 italic">"{testimonial.content}"</p>
                 </div>
 
@@ -189,14 +189,14 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
                     <button 
                     type="button"
                     onClick={onClose}
-                    className="flex-1 py-4 text-sm font-bold text-medium hover:bg-chalk rounded-2xl transition-colors"
+                    className="flex-1 py-4 text-sm font-bold text-txtSecondary hover:bg-txtPrimary/50 rounded-2xl transition-colors"
                     >
                     Cancelar
                     </button>
                     <button 
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 py-4 bg-brand text-white text-sm font-bold rounded-2xl shadow-lg shadow-brand/20 hover:bg-green-700 transition-all flex items-center justify-center gap-2"
+                    className="flex-1 py-4 bg-primary text-txtPrimary text-sm font-bold rounded-2xl shadow-lg shadow-brand/20 hover:bg-brand transition-all flex items-center justify-center gap-2"
                     >
                     {isSubmitting ? "Guardando..." : <><MdSave size={20}/> Guardar Cambios</>}
                     </button>
