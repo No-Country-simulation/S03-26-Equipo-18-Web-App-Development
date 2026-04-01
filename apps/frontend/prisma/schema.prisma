@@ -38,13 +38,13 @@ model Testimonial {
   content     String   // El texto del testimonio
   rating      Int      @default(5) // Estrellas
   location    String   @default("")
-  //Valores: 'PENDING', 'APPROVED', 'REJECTED'
   status      String   @default("PENDIENTE")
   instituto   String
   videoUrl    String?
   //proveedor de video("YOUTUBE","CLOUDINARY","NONE")
   videoProvider String @default("NONE")
   createdAt   DateTime @default(now()) 
+  views       Int     @default(0)
   
   // Conexión con la EdTech
   user          User?     @relation(fields: [userId], references: [id])

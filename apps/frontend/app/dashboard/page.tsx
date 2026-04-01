@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import TituloPage from "@/components/tituloPage";
 import StatCard from "@/components/StatCard";
 import LastestTestimonials from "@/components/LastestTestimonials";
+import TopTestimonial from "@/components/TopTestimonial";
+
 import { 
   MdChatBubbleOutline, 
   MdCheckCircleOutline, 
@@ -12,6 +14,8 @@ import {
   MdOutlineStarBorder, 
   MdAutoGraph 
 } from "react-icons/md";
+
+
 
 export default async function DashboardPage() {
   const adminInstituto = "No-Country"; // Luego vendrá de la sesión
@@ -34,14 +38,23 @@ export default async function DashboardPage() {
   });
 
   const lastestTestimonials = await prisma.testimonial.findMany({
-  where: { instituto: adminInstituto },
-  take: 4, // Solo los últimos 4 para el dashboard
-  orderBy: { createdAt: 'desc' },
-  include: {
-    category: true, // Necesario para t.category.name
-    tags: true      // Necesario para la lista de tags
-  }
-});
+    where: { instituto: adminInstituto },
+    take: 4, // Solo los últimos 4 para el dashboard
+    orderBy: { createdAt: 'desc' },
+    include: {
+      category: true, // Necesario para t.category.name
+      tags: true      // Necesario para la lista de tags
+    }
+  });
+
+  const topTestimonials = await prisma.testimonial.findMany({
+    where: { instituto: adminInstituto },
+    orderBy: { views: 'desc' }, 
+    take: 4,
+    include: {
+      category: true
+    }
+  });
 
   return (
     <div className="p-8">
@@ -104,11 +117,17 @@ export default async function DashboardPage() {
         />
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-10 mt-10 bg-cards p-6 rounded-3xl border border-border">
-        {/* Últimos testimonios */}
+      <div className="flex flex-col lg:flex-row gap-10 mt-10 bg-cards p-6 rounded-3xl border border-border ">
+
         <div className="mt-10">
+          {/* Últimos testimonios */}
           <LastestTestimonials testimonials={lastestTestimonials} />
         </div>
+        <div className="mt-10">
+          {/* Testimonios más vistos */}
+          <TopTestimonial data={topTestimonials} />
+        </div>
+
       </div>
 
 
