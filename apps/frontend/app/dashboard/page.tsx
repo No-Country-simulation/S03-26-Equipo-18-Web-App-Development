@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import TituloPage from "@/components/tituloPage";
 import StatCard from "@/components/StatCard";
+import LastestTestimonials from "@/components/LastestTestimonials";
 import { 
   MdChatBubbleOutline, 
   MdCheckCircleOutline, 
@@ -31,6 +32,16 @@ export default async function DashboardPage() {
   const rechazados = await prisma.testimonial.count({
     where: { instituto: adminInstituto, status: "RECHAZADO" }
   });
+
+  const lastestTestimonials = await prisma.testimonial.findMany({
+  where: { instituto: adminInstituto },
+  take: 4, // Solo los últimos 4 para el dashboard
+  orderBy: { createdAt: 'desc' },
+  include: {
+    category: true, // Necesario para t.category.name
+    tags: true      // Necesario para la lista de tags
+  }
+});
 
   return (
     <div className="p-8">
@@ -92,6 +103,15 @@ export default async function DashboardPage() {
           iconColor="text-purple-500" 
         />
       </div>
+
+      <div className="flex flex-col lg:flex-row gap-10 mt-10 bg-cards p-6 rounded-3xl border border-border">
+        {/* Últimos testimonios */}
+        <div className="mt-10">
+          <LastestTestimonials testimonials={lastestTestimonials} />
+        </div>
+      </div>
+
+
     </div>
   );
 }

@@ -33,6 +33,7 @@ const Testimonials = async (
             { userName: { contains: query} },
             { content: { contains: query} },
             { location: { contains: query} },
+            { category: { name: { contains: query} } },
             { tags: { some: { name: { contains: query} } } },
           ],
         },
@@ -50,6 +51,7 @@ const Testimonials = async (
         { userName: { contains: query } },
         { content: { contains: query, } },
         { location: { contains: query, } },
+        { category: { name: { contains: query, } } },
         { tags: { some: { name: { contains: query, } } } },
       ],
     };
