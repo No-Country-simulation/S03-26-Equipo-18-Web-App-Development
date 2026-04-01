@@ -24,6 +24,9 @@ services:
       - "3000:3000"
     depends_on:
       - db
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/testimonial_cms?schema=public
+      - PORT=3000
     volumes:
       - .:/app
       - /app/node_modules
