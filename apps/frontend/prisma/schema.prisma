@@ -9,13 +9,13 @@ generator client {
 
 model User {
   id           String   @id @default(cuid())
-  username     String?
+  username     String
   email        String   @unique
   password     String
   role         String   @default("ADMIN") // 'ADMIN', 'EDITOR', etc.
   active       Boolean  @default(true)
-  apiKey       String   @unique @default(uuid()) // La llave para su API
-  instituto    String?  // El nombre de la institución (ex EdTech.name)
+  apiKey       String?   @unique @default(uuid()) // La llave para su API
+  instituto    String  // El nombre de la institución (ex EdTech.name)
   createdAt    DateTime @default(now())
   testimonials Testimonial[]
 }
@@ -39,15 +39,16 @@ model Testimonial {
   rating      Int      @default(5) // Estrellas
   location    String   @default("")
   //Valores: 'PENDING', 'APPROVED', 'REJECTED'
-  status      String   @default("PENDING")
+  status      String   @default("PENDIENTE")
+  instituto   String
   videoUrl    String?
   //proveedor de video("YOUTUBE","CLOUDINARY","NONE")
   videoProvider String @default("NONE")
   createdAt   DateTime @default(now()) 
   
   // Conexión con la EdTech
-  user          User     @relation(fields: [userId], references: [id])
-  userId        String
+  user          User?     @relation(fields: [userId], references: [id])
+  userId        String?
 
   // RELACIÓN CON CATEGORY (Uno a Muchos)
   category      Category @relation(fields: [categoryId], references: [id])

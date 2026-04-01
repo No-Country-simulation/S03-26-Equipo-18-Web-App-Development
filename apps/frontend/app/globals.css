@@ -7,6 +7,7 @@
 
 @theme {
   /* Definimos colores de Figma como variables de Tailwind */
+  --color-brand_2: #00f3ff;  /* Azul Claro */
   --color-brand: #008F68;    /* Verde Esmeralda */
   --color-dark: #595959;     /* Gris Oscuro */
   --color-medium: #757575;   /* Gris Medio */
