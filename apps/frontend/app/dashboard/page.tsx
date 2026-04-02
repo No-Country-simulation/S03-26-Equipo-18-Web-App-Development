@@ -37,6 +37,18 @@ export default async function DashboardPage() {
     where: { instituto: adminInstituto, status: "RECHAZADO" }
   });
 
+  const statsAggregate = await prisma.testimonial.aggregate({
+    where: { instituto: adminInstituto },
+    _sum: { views: true }, //suma total de vistas de todos los testimonios del instituto
+    _avg: { rating: true }, //promedio de rating de todos los testimonios del instituto
+
+  });
+  
+  const totalViews = statsAggregate._sum.views || 0; // Si no hay vistas, devuelve 0
+  
+  const avgRating = statsAggregate._avg.rating ? parseFloat(statsAggregate._avg.rating.toFixed(1)) : 0; 
+
+
   const lastestTestimonials = await prisma.testimonial.findMany({
     where: { instituto: adminInstituto },
     take: 4, // Solo los últimos 4 para el dashboard
@@ -93,7 +105,7 @@ export default async function DashboardPage() {
         {/* Estas métricas las simularemos por ahora (son de engagement) */}
         <StatCard 
           title="Vistas totales" 
-          value="3670" 
+          value={totalViews.toLocaleString()} //para agregar los punto miles
           icon={MdRemoveRedEye} 
           iconColor="text-blue-500" 
         />
@@ -105,7 +117,7 @@ export default async function DashboardPage() {
         />
         <StatCard 
           title="Rating promedio" 
-          value="4.1" 
+          value={avgRating.toFixed(1)} 
           icon={MdOutlineStarBorder} 
           iconColor="text-orange-400" 
         />
