@@ -1,13 +1,5 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google"; // Usaremos Inter, es la reina de los Dashboards
+import Providers from "@/components/Providers";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "TestimonialCMS",
-  description: "Gestiona los testimonios de tu EdTech",
-};
 
 export default function RootLayout({
   children,
@@ -16,8 +8,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={inter.className}>
-        {children}
+      <body suppressHydrationWarning>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

@@ -18,7 +18,7 @@ export async function GET(request: Request) {
       where: {
         user: {
           apiKey: apiKey, // Solo trae los que coincidan con la llave
-          role: "ADMIN"
+          role: "ADMIN",
         },
         //Filtro: sólo se van a mostrar los testimonios aprobados
         status: "APROBADO",

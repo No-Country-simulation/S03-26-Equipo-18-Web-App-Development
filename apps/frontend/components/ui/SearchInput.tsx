@@ -24,11 +24,11 @@ const SearchInput = () => {
 
   return (
     <div className="relative flex-1 min-w-75">
-      <MdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-medium text-xl" />
+      <MdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-txtSecondary text-2xl" />
       <input
         type="text"
         placeholder="Buscar por nombre, categoria, contenido o tag..."
-        className="w-full pl-12 pr-4 py-3 bg-white/90 focus:bg-white rounded-2xl border-none outline-none shadow-sm text-sm transition-all"
+        className="w-full pl-12 pr-4 py-3 bg-border focus:bg-cards rounded-2xl border-none outline-none shadow-sm text-sm transition-all"
         onChange={(e) => handleSearch(e.target.value)}
         defaultValue={searchParams.get("query")?.toString()}
       />

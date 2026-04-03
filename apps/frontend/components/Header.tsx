@@ -2,14 +2,14 @@ import { MdPerson, MdLogout } from "react-icons/md";
 
 const Header = () => {
   return (
-    <header className="h-16 bg-chalk border-b border-gray-200 flex items-center justify-end px-8 gap-6">
+    <header className="h-16 bg-sidebar flex items-center justify-end px-8 gap-6">
           
 
           {/* Perfil de Usuario */}
-          <div className="flex items-center gap-3 pl-6 border-l border-gray-100">
+          <div className="flex items-center gap-3 pl-6 border-l border-border">
             <div className="text-right">
-              <p className="text-sm font-bold text-dark leading-none">Nombre de Usuario</p>
-              <p className="text-xs text-medium">Admin</p>
+              <p className="text-m font-bold text-txtPrimary leading-none">Nombre de Usuario</p>
+              <p className="text-sm text-txtSecondary">Admin</p>
             </div>
             
           
@@ -24,7 +24,7 @@ const Header = () => {
             title="Cerrar sesión"
           >
             <MdLogout className="text-xl" />
-            <span className="text-sm font-medium">Salir</span>
+            <span className="text-m font-medium">Salir</span>
           </button>
         </header>
   )
