@@ -1,8 +1,8 @@
 // src/modules/auth/auth.controller.ts
 
 import type { NextFunction, Request, Response } from "express";
-import { loginSchema } from "./auth.schema";
-import { getCurrentUser, loginUser } from "./auth.service";
+import { loginSchema, registerSchema } from "./auth.schema";
+import { getCurrentUser, loginUser, registerUser } from "./auth.service";
 import { AppError } from "../../shared/utils/AppError";
 import z from "zod";
 import { AppJwtPayload } from "../../shared/utils/jwt";
@@ -61,6 +61,50 @@ export async function GetMeController(
     return res.status(200).json({
       success: true,
       data: user,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function RegisterController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const authReq = req as AuthenticatedRequest;
+
+    if (!authReq.user?.role) {
+      return next(
+        new AppError(401, 'AUTH_INVALID_TOKEN', 'Token inválido o expirado')
+      );
+    }
+
+    if (authReq.user.role !== 'ADMIN') {
+      return next(
+        new AppError(403, 'FORBIDDEN', 'No tienes permisos para registrar usuarios')
+      );
+    }
+
+    const parsedBody = registerSchema.safeParse(req.body);
+
+    if (!parsedBody.success) {
+      return next(
+        new AppError(
+          400,
+          'VALIDATION_ERROR',
+          'Datos inválidos',
+          z.treeifyError(parsedBody.error)
+        )
+      );
+    }
+
+    const result = await registerUser(parsedBody.data, authReq.user.role);
+
+    return res.status(201).json({
+      success: true,
+      data: result,
     });
   } catch (error) {
     return next(error);

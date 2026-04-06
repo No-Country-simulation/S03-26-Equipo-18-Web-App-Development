@@ -1,7 +1,9 @@
+// src/modules/auth/auth.service.ts
+
 import { prisma } from '../../config/prisma';
-import type { LoginInput } from './auth.schema';
+import type { LoginInput, RegisterInput } from './auth.schema';
 import { AppError } from '../../shared/utils/AppError';
-import { comparePassword } from '../../shared/utils/hash';
+import { comparePassword, hashPassword } from '../../shared/utils/hash';
 import { AppJwtPayload, signAccessToken } from '../../shared/utils/jwt';
 
 
@@ -13,16 +15,15 @@ type PublicUser = {
   active: boolean;
 };
 
-type LoginResponse = {
-    token: string;
-    user: {
-        id: string;
-        name: string;
-        email: string;
-        role: string;
-        active: boolean;
-    };
-    
+type AuthResponse = {
+  token: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    active: boolean;
+  };
 };
 
 function toPublicUser(user: {
@@ -41,9 +42,21 @@ function toPublicUser(user: {
   };
 }
 
+async function findUserByEmail(email: string) {
+  return prisma.user.findUnique({
+    where: { email },
+  });
+}
+
+async function findUserById(id: string) {
+  return prisma.user.findUnique({
+    where: { id },
+  });
+}
+
 async function findActiveUserByEmail(email: string) {
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await findUserByEmail(email);
 
 
     if (!user) {
@@ -57,16 +70,9 @@ async function findActiveUserByEmail(email: string) {
     return user;
 }
 
-export async function loginUser(input: LoginInput): Promise<LoginResponse> {
-    const user = await findActiveUserByEmail(input.email);
-    
-    if (!user) {
-        throw new AppError(401, 'AUTH_INVALID_CREDENTIALS', 'Invalid email or password');
-    }
 
-    if (!user.active) {
-    throw new AppError(403, 'USER_INACTIVE', 'El usuario está inactivo');
-    }
+export async function loginUser(input: LoginInput): Promise<AuthResponse> {
+    const user = await findActiveUserByEmail(input.email);
 
     const isPasswordValid = await comparePassword(input.password, user.passwordHash);   
 
@@ -89,9 +95,7 @@ export async function loginUser(input: LoginInput): Promise<LoginResponse> {
 }
 
 export async function getCurrentUser(userId: string): Promise<PublicUser> {
-    const user = await prisma.user.findUnique({
-        where: { id: userId },
-    });
+    const user = await findUserById(userId);
 
     if (!user) {
         throw new AppError(404, 'USER_NOT_FOUND', 'Usuario no encontrado');
@@ -102,4 +106,43 @@ export async function getCurrentUser(userId: string): Promise<PublicUser> {
     }
 
     return toPublicUser(user);
+}
+
+export async function registerUser(input: RegisterInput, currentUserRole: string): 
+    Promise<AuthResponse> {
+    
+        if (currentUserRole !== 'ADMIN') {
+            throw new AppError(403, 'FORBIDDEN', 'No tienes permisos para registrar usuarios');
+        }
+        
+    const existingUser = await findUserByEmail(input.email);
+
+    if (existingUser) {
+        throw new AppError(409, 'USER_ALREADY_EXISTS', 'El correo ya está registrado');
+    }
+
+    const passwordHash = await hashPassword(input.password);
+
+    const user = await prisma.user.create({
+        data: {
+        name: input.name,
+        email: input.email,
+        passwordHash,
+        role: input.role ?? 'VISITOR',
+        active: true,
+        },
+    });
+
+    const payload: AppJwtPayload = {
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+    };
+
+    const token = signAccessToken(payload);
+
+    return {
+        token,
+        user: toPublicUser(user),
+    };
 }
