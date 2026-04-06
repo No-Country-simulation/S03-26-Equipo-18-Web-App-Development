@@ -1,4 +1,5 @@
 // src/utils/jwt.ts
+import { Role } from '.prisma/client/default';
 import jwt, { type Secret, type SignOptions } from 'jsonwebtoken';
 
 type JwtExpiresIn = SignOptions['expiresIn'];
@@ -6,7 +7,7 @@ type JwtExpiresIn = SignOptions['expiresIn'];
 export interface AppJwtPayload {
   sub: string;
   email?: string;
-  role?: string;
+  role: Role;
 }
 
 function getEnv(name: string): string {

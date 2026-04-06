@@ -44,3 +44,25 @@ export function authenticateJwt(req: Request, res: Response, next: NextFunction)
         );  
     }   
 }
+
+export function authorizeRoles(...allowedRoles: AppJwtPayload['role'][]) {
+  return (req: Request, _res: Response, next: NextFunction) => {
+    const authReq = req as AuthenticatedRequest;
+
+    if (!authReq.user) {
+      return next(
+        new AppError(401, 'AUTH_UNAUTHORIZED', 'Usuario no autenticado')
+      );
+    }
+
+    const userRole = authReq.user.role;
+
+    if (!allowedRoles.includes(userRole)) {
+      return next(
+        new AppError(403, 'AUTH_FORBIDDEN', 'No tienes permisos para realizar esta acción, solo un administrador puede realizar esta acción')
+      );
+    }
+
+    return next();
+  };
+}
