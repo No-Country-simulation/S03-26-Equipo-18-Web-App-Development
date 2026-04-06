@@ -22,13 +22,13 @@ const NavBarItem = ({href, icon, label, isCollapsed}: NavItemProps) => {
       title= {label}
       className={`flex items-center gap-8 px-4 py-2.5 rounded-lg font-medium transition-all group ${
         isActive 
-          ? "text-brand shadow-sm" 
-          : "text-dark hover:bg-chalk/50" 
+          ? "text-primary shadow-sm" 
+          : "text-txtSecondary hover:bg-chalk/50" 
       } ${isCollapsed ? "justify-center" : ""}`}
     >
       {/* El icono hereda el color del texto del padre */}
-      <span className="text-xl shrink-0"> {icon}</span>
-      {!isCollapsed && <span className="text-xl whitespace-nowrap">{label}</span>}
+      <span className="text-3xl shrink-0"> {icon}</span>
+      {!isCollapsed && <span className="text-xl whitespace-wrap">{label}</span>}
 
     </Link>
   )

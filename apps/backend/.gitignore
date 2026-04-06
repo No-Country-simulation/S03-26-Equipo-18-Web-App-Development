@@ -4,3 +4,4 @@ build/
 .env
 .env.dev
 prisma/.env
+apuntes.txt

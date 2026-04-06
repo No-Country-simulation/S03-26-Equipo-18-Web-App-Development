@@ -1,4 +1,4 @@
-import { MdDashboard, MdMessage, MdAddModerator, MdGroups, MdSettings} from "react-icons/md";
+import { MdDashboard, MdMessage, MdGroups, MdSettings} from "react-icons/md";
 
 import NavBarItem from "./NavBarItem";
 import TituloNav from "./tituloNav";
@@ -22,7 +22,7 @@ const NavBar = ({ isCollapsed }: Props) => {
             <NavBarItem 
                 href="/dashboard/testimonials" 
                 icon={<MdMessage />}
-                label="Moderación" 
+                label="Gestor de Testimonios" 
                 isCollapsed={isCollapsed}/>
 
           <TituloNav label="Administración" isCollapsed={isCollapsed}/>
@@ -35,7 +35,7 @@ const NavBar = ({ isCollapsed }: Props) => {
             <NavBarItem
                 href="/dashboard/settings"
                 icon={<MdSettings />}
-                label="Configuración" 
+                label="Api y Configuración" 
                 isCollapsed={isCollapsed}/>
     
         </nav>
