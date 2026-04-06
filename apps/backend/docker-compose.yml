@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:16
+    container_name: testimonial-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: testimonial_cms
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: testimonial-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - PORT=${PORT}
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:
