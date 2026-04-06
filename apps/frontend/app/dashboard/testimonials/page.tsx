@@ -4,6 +4,9 @@ import TestimonialsClient from "@/components/TestimonialsClient";
 import SearchInput from "@/components/ui/SearchInput";
 import { StatusFilters } from "@/components/ui/StatusFilter";
 
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 
 //Nota: Next.js pasa automáticamente 'searchParams' como prop a los componentes de página, pero como no lo estamos usando directamente aquí, podemos omitirlo. Si en el futuro necesitamos acceder a los parámetros de búsqueda, podemos usar el hook 'useSearchParams' dentro del componente.
@@ -16,12 +19,19 @@ const Testimonials = async (
   }
 )=>{
 
+  const session = await getServerSession(authOptions);
+  if (!session) redirect("/login");
+
+  const masterAdminId = session.user.adminId || session.user.id;
+
   const params = await searchParams;
   const query = params?.query || "";
   const status = params?.status || "";
 
   // 1. Creamos el objeto 'where' vacío
-  let finalWhere: any = {};
+  let finalWhere: any = {
+    userId: masterAdminId, // Aseguramos que solo se muestren los testimonios del admin logueado
+  };
 
   // 2. Si hay status Y query, usamos AND
   if (status && query) {

@@ -4,6 +4,10 @@ import StatCard from "@/components/StatCard";
 import LastestTestimonials from "@/components/LastestTestimonials";
 import TopTestimonial from "@/components/TopTestimonial";
 
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
+
 import { 
   MdChatBubbleOutline, 
   MdCheckCircleOutline, 
@@ -18,27 +22,35 @@ import {
 
 
 export default async function DashboardPage() {
-  const adminInstituto = "No-Country"; // Luego vendrá de la sesión
+  const session = await getServerSession(authOptions);
 
+  if (!session) {
+    redirect("/login");
+  }
+
+  //Si el usuario es STAFF, adminID tendrá el ID de su JEFE
+  //Si el usuario es ADMIN pricipal, adminID es null, entonces usamos su propio ID
+  const masterAdminId = session.user.adminId || session.user.id;
+  
   // Consultas reales a Prisma
   const totalTestimonios = await prisma.testimonial.count({
-    where: { instituto: adminInstituto }
+    where: { userId: masterAdminId }
   });
 
   const aprobados = await prisma.testimonial.count({
-    where: { instituto: adminInstituto, status: "APROBADO" }
+    where: { userId: masterAdminId, status: "APROBADO" }
   });
 
   const pendientes = await prisma.testimonial.count({
-    where: { instituto: adminInstituto, status: "PENDIENTE" }
+    where: { userId: masterAdminId, status: "PENDIENTE" }
   });
 
   const rechazados = await prisma.testimonial.count({
-    where: { instituto: adminInstituto, status: "RECHAZADO" }
+    where: { userId: masterAdminId, status: "RECHAZADO" }
   });
 
   const statsAggregate = await prisma.testimonial.aggregate({
-    where: { instituto: adminInstituto },
+    where: { userId: masterAdminId },
     _sum: { views: true }, //suma total de vistas de todos los testimonios del instituto
     _avg: { rating: true }, //promedio de rating de todos los testimonios del instituto
 
@@ -50,7 +62,7 @@ export default async function DashboardPage() {
 
 
   const lastestTestimonials = await prisma.testimonial.findMany({
-    where: { instituto: adminInstituto },
+    where: { userId: masterAdminId },
     take: 4, // Solo los últimos 4 para el dashboard
     orderBy: { createdAt: 'desc' },
     include: {
@@ -60,13 +72,14 @@ export default async function DashboardPage() {
   });
 
   const topTestimonials = await prisma.testimonial.findMany({
-    where: { instituto: adminInstituto },
+    where: { userId: masterAdminId },
     orderBy: { views: 'desc' }, 
     take: 4,
     include: {
       category: true
     }
   });
+
 
   return (
     <div className="p-8">

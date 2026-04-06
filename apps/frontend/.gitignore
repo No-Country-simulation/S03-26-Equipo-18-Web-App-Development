@@ -1,6 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
+node_modules
 /node_modules
 /.pnp
 .pnp.*
@@ -40,4 +41,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Prisma
+.env
+node_modules
+.next
+/prisma/*.db
+/prisma/*.db-journal
+dev.db
 /app/generated/prisma
