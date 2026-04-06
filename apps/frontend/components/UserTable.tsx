@@ -11,11 +11,10 @@ interface UserFromDB {
     email: string;
     role: string;
     active: boolean;
-    createdAt: Date;
-    instituto: string;
+    createdAt: string;
+    organization: string;
+    adminId: string | null;
 }
-
-
 
 
 

@@ -6,11 +6,11 @@ import bcrypt from "bcryptjs";
 
 
 {/**CREAR UN NUEVO USUARIO  */}
-export async function createUserAction(formData: any, adminInstituto: string) {
+export async function createUserAction(formData: any, adminId: string) {
   const { username, email, role } = formData;
 
   // 1. Generamos una contraseña temporal (puedes cambiarla por algo más complejo)
-  const temporaryPassword = "Cambiar123!"; 
+  const temporaryPassword = "pass123"; 
   const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
 
   try {
@@ -20,9 +20,10 @@ export async function createUserAction(formData: any, adminInstituto: string) {
         email,
         password: hashedPassword,
         role: role || "EDITOR",
-        instituto: adminInstituto, // <--- Aquí heredamos el instituto del Admin
+        adminId: adminId, 
         active: true,
         apiKey: null,//sólo el admin original posee apiKey
+        organization: "", // Por ahora lo dejamos vacío, se puede extender para que el admin original asigne una organización al crear el usuario 
       },
     });
 

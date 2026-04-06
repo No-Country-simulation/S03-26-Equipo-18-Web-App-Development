@@ -26,7 +26,7 @@ const LastestTestimonials = ({ testimonials }: LastestTestimonialsProps) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold text-txtPrimary">Testimonios recientes</h3>
+        <h3 className="text-xl font-bold text-chalk">Testimonios recientes</h3>
         <Link 
             href="/dashboard/testimonials"
             className="text-sm font-bold text-primary bg-dark py-2 px-3 rounded-3xl border border-border hover:underline">

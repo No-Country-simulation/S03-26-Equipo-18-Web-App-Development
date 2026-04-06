@@ -152,16 +152,53 @@ Para visualizar las tablas sin instalar PostgreSQL en tu máquina, se incluye un
 
 1. Levanta el stack:
    docker compose up -d
-2. Abre en el navegador:
+2. 2. Abre en el navegador:
    http://localhost:5050
 3. Inicia sesión con:
-   - Email: example@example.com
-   - Password: any_password
+   - Email: admin@admin.com
+   - Password: admin
 4. Crea una nueva conexión:
-   - Host: host_example
-   - Port: number_port_db
-   - Username: user_example
-   - Password: any_password
-   - Database: db_name
+   - Host: db
+   - Port: 5432
+   - Username: postgres
+   - Password: postgres
+   - Database: testimonial_cms
 
 Desde ahí podrás visualizar todas las tablas del modelo de datos (usuarios, testimonios, categorías, tags, etc.).
+
+## CRUD Testimonios
+
+### Ruta
+GET /api/private/testimonios
+
+### Query params sugeridos
+page=1
+limit=10
+q=
+status=
+type=
+categoryId=
+createdById=
+sortBy=createdAt
+sortOrder=desc
+
+
+### Respuesta Exitosa
+{
+  "success": true,
+  "data": [
+    {
+      "id": "....",
+      "title": "...."
+    }
+  ],
+  "meta": {
+    "total": 48,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 5
+  }
+}
+
+
+

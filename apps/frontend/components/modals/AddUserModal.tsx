@@ -1,5 +1,5 @@
 import {useForm } from "react-hook-form";
-import { MdClose, MdSave, MdPersonAdd } from "react-icons/md";  
+import { MdClose } from "react-icons/md";  
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -17,12 +17,12 @@ type UserFormData = z.infer<typeof userSchema>;
 interface AddUserModalProps {
     isOpen: boolean;
     onClose: () => void;
-    adminInstituto: string; // Para heredar el instituto del Admin
+    adminId: string; // Para heredar el instituto del Admin
     onSubmit: (data: UserFormData) => void;
 }   
 
 
-    const AddUserModal = ({ isOpen, onClose, adminInstituto, onSubmit }: AddUserModalProps) => {
+    const AddUserModal = ({ isOpen, onClose, adminId, onSubmit }: AddUserModalProps) => {
         const { 
             register, 
             handleSubmit, 
@@ -38,7 +38,16 @@ interface AddUserModalProps {
     if (!isOpen) return null;
 
     const handleInternalSubmit = (data: UserFormData) => {
-        onSubmit(data);
+
+
+        const fullUserData = {
+            ...data,
+            adminId: adminId,
+            apiKey: null,
+            password: "pass123", // Contraseña por defecto, el usuario la debe cambiar luego
+        };
+
+        onSubmit(fullUserData);
         reset(); // Limpia el formulario al terminar
         onClose(); // Cierra el modal después de enviar los datos
     };
