@@ -30,17 +30,17 @@ const getStatusClass = (status: string) => {
 
 const TestimonialCard = ({ userName, content, rating, location, category, status, tags }: TestimonialCardProps) => {
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col h-full hover:shadow-lg transition-all duration-300">
+    <div className="bg-chalk rounded-3xl p-6 shadow-sm  border border-primary flex flex-col h-full hover:shadow-lg transition-all duration-300">
       
       {/* HEADER */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-brand/10 rounded-full flex items-center justify-center text-brand font-bold text-xl">
+          <div className="w-12 h-12 bg-brand/10 rounded-full flex items-center justify-center text-primary font-bold text-xl">
             {userName[0].toUpperCase()}
           </div>
           <div>
             <h4 className="font-bold text-dark text-sm uppercase tracking-tight">{userName}</h4>
-            <div className="flex items-center gap-1 text-[10px] text-brand font-bold uppercase">
+            <div className="flex items-center gap-1 text-[10px] text-primary font-bold uppercase">
               <MdCategory size={12} />
               {category}
             </div>
@@ -55,7 +55,7 @@ const TestimonialCard = ({ userName, content, rating, location, category, status
 
       {/* CUERPO */}
       <div className="grow">
-        <p className="text-dark/80 text-sm leading-relaxed italic line-clamp-4">
+        <p className="text-dark text-sm leading-relaxed italic line-clamp-4">
           "{content}"
         </p>
       </div>

@@ -1,6 +1,6 @@
 datasource db {
-  provider = "sqlite" // Aquí cambias a "mysql" o "sqlite" si usas otro
-  url      = "file:./dev.db"
+  provider = "sqlite" 
+
 }
 
 generator client {

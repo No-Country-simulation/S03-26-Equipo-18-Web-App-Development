@@ -9,16 +9,17 @@ import { toast } from "react-hot-toast";
 
 
 interface Props {
-  adminInstituto: string;
+  adminId: string;
+
 }
 
 
-const BtnNewUser = ({ adminInstituto }: Props ) => {
+const BtnNewUser = ({ adminId }: Props ) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleAddUser = async (data: any) => {
-        const result = await createUserAction(data, adminInstituto);
+        const result = await createUserAction(data, adminId);
         if (result.success) {
             toast.success("¡Usuario creado!");
             setIsModalOpen(false);
@@ -43,7 +44,7 @@ const BtnNewUser = ({ adminInstituto }: Props ) => {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         onSubmit={handleAddUser}
-        adminInstituto= {adminInstituto}
+        adminId= {adminId}
       />
     </>
   )

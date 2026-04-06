@@ -6,6 +6,8 @@ import {z} from "zod";
 import {useRouter} from "next/navigation";
 import { MdEmail, MdLock, MdError } from "react-icons/md";
 import Image from "next/image";
+import { signIn } from "next-auth/react";
+import { toast } from "react-hot-toast";
 
 //1° Definimos el esquema de zod
 const loginSchema = z.object({
@@ -33,9 +35,28 @@ const LoginPage = () => {
 //5° Función para manejar el envío del formulario
     const onSubmit = async (data: LoginData) => {
         console.log("Datos del formulario:", data);
-        // Aquí iría la lógica de autenticación
-        // Por ahora, simulamos éxito y redirigimos
-    router.push("/dashboard");
+      try {
+          // 5°1. Llamamos a NextAuth con el proveedor "credentials"
+          const result = await signIn("credentials", {
+            email: data.email,
+            password: data.password,
+            redirect: false, // Evitamos redirección automática para manejar errores aquí
+          });
+
+          if (result?.error) {
+            // 5°2. Si hay error mostramos notificación
+            toast.error("Correo o contraseña incorrectos");
+            return;
+          }
+
+          // 5°3. Si tiene éxito
+          toast.success("¡Bienvenido de nuevo!");
+          router.push("/dashboard");
+          router.refresh(); // Forzamos la actualización de la sesión en el layout
+          
+      } catch (error) {
+          toast.error("Ocurrió un error inesperado. Intenta de nuevo.");
+      }
     }
 
     return(
