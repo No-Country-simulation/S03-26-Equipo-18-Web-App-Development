@@ -8,10 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ─────────────────────────────────────────
-// ENUMS
-// ─────────────────────────────────────────
-
 enum Role {
   ADMIN
   EDITOR
@@ -38,107 +34,105 @@ enum EventType {
   CLICK_CTA
 }
 
-// ─────────────────────────────────────────
-// MODELS
-// ─────────────────────────────────────────
-
 model User {
-  id           String           @id @default(cuid())
+  id           String   @id @default(cuid())
   name         String
-  email        String           @unique
-  passwordHash String           @map("password_hash")
+  organization String?
+  email        String   @unique
+  passwordHash String
   role         Role
-  active       Boolean
-  createdAt    DateTime         @map("created_at") @default(now())
-  updatedAt    DateTime         @map("updated_at") @updatedAt
+  isActive     Boolean  @default(true)
+  apiKey       String?  @unique
+  adminId      String?
+  admin        User?    @relation("AdminEditors", fields: [adminId], references: [id])
+  editors      User[]   @relation("AdminEditors")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   createdTestimonials Testimonial[] @relation("UserTestimonials")
-
-  @@map("usuarios")
+  ownedTestimonials    Testimonial[] @relation("AdminTestimonials")
 }
 
 model Testimonial {
   id              String            @id @default(cuid())
   title           String
   content         String            @db.Text
-  authorName      String            @map("autor_nombre")
-  authorPosition  String            @map("autor_cargo")
-  authorEmail     String            @map("autor_email")
-  authorCompany   String            @map("autor_empresa")
+  authorName      String
+  authorPosition  String?
+  authorEmail     String?
+  authorCompany   String?
 
   type            TestimonialType
-  status          TestimonialStatus
+  status          TestimonialStatus @default(PENDING)
 
-  imageUrl        String?           @map("url_imagen")
-  videoUrl        String?           @map("url_video")
-  youtubeId       String?           @map("youtube_id")
+  imageUrl        String?
+  videoUrl        String?
+  youtubeId       String?
 
-  rejectionReason String?           @db.Text @map("motivo_rechazo")
-  views           Int               @map("vistas")
+  rejectionReason String?           @db.Text
+  views           Int               @default(0)
+  clicks          Int               @default(0)
+  isFeatured      Boolean           @default(false)
 
-  // Relations
-  categoryId      String?           @map("categoria_id")
+  categoryId      String?
   category        Category?         @relation(fields: [categoryId], references: [id])
 
-  createdById     String?           @map("creado_por_id")
+  createdById     String?
   createdBy       User?             @relation("UserTestimonials", fields: [createdById], references: [id])
 
+  adminId         String?
+  admin           User?             @relation("AdminTestimonials", fields: [adminId], references: [id])
+
+  testimonialTags TestimonialTag[]
   engagementEvents EngagementEvent[]
-  testimonialTags  TestimonialTag[]
 
-  createdAt       DateTime          @map("created_at") @default(now())
-  updatedAt       DateTime          @map("updated_at") @updatedAt
-  publishedAt     DateTime?         @map("publicado_at")
-
-  @@map("testimonios")
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  publishedAt     DateTime?
 }
 
 model Category {
-  id          String          @id @default(cuid())
-  name        String          @unique @map("nombre")
-  slug        String          @unique
-  description String?         @db.Text @map("descripcion")
-  createdAt   DateTime        @map("created_at") @default(now())
+  id           String        @id @default(cuid())
+  name         String        @unique
+  slug         String        @unique
+  description  String?
+  createdAt    DateTime      @default(now())
 
   testimonials Testimonial[]
-
-  @@map("categorias")
 }
 
 model Tag {
-  id        String           @id @default(cuid())
-  name      String           @unique @map("nombre")
-  slug      String           @unique
-  createdAt DateTime         @map("created_at") @default(now())
+  id              String           @id @default(cuid())
+  name            String           @unique
+  slug            String           @unique
+  createdAt       DateTime         @default(now())
 
   testimonialTags TestimonialTag[]
-
-  @@map("tags")
 }
 
-// Join table for N:M
 model TestimonialTag {
   testimonialId String
   tagId         String
 
-  testimonial   Testimonial @relation(fields: [testimonialId], references: [id])
-  tag           Tag         @relation(fields: [tagId], references: [id])
+  testimonial   Testimonial @relation(fields: [testimonialId], references: [id], onDelete: Cascade)
+  tag           Tag         @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([testimonialId, tagId])
-  @@map("testimonios_tags")
+  @@index([tagId])
 }
 
-// Analytics
 model EngagementEvent {
-  id           String      @id @default(cuid())
-  testimonialId String     @map("testimonio_id")
-  type         EventType   @map("tipo")
-  source       String      @map("fuente")
-  ip           String
-  userAgent    String      @map("user_agent")
-  createdAt    DateTime    @map("created_at") @default(now())
+  id            String      @id @default(cuid())
+  testimonialId String
+  type          EventType
+  source        String?
+  ip            String?
+  userAgent     String?
+  createdAt     DateTime    @default(now())
 
-  testimonial  Testimonial @relation(fields: [testimonialId], references: [id])
+  testimonial   Testimonial @relation(fields: [testimonialId], references: [id], onDelete: Cascade)
 
-  @@map("engagement_events")
+  @@index([testimonialId])
+  @@index([type])
+  @@index([createdAt])
 }
