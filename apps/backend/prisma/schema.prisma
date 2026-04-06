@@ -1,3 +1,7 @@
+// ─────────────────────────────────────────
+// CONFIGURACIÓN INICIAL
+// ─────────────────────────────────────────
+
 generator client {
   provider = "prisma-client-js"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
@@ -8,10 +12,159 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Testimonio {
-  id        Int      @id @default(autoincrement())
-  nombre    String
-  mensaje   String
-  estado    String   @default("PENDIENTE")
-  createdAt DateTime @default(now())
+// ─────────────────────────────────────────
+// ENUMS (Seguridad y Tipado)
+// ─────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  EDITOR
+  VISITOR
+}
+
+enum TestimonialStatus {
+  PENDING
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  REJECTED
+}
+
+enum EventType {
+  VIEW
+  CLICK_EMBED
+  CLICK_CTA
+}
+
+// ─────────────────────────────────────────
+// MODELOS PRINCIPALES
+// ─────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         Role     @default(VISITOR)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Un usuario puede gestionar muchos testimonios
+  testimonials Testimonial[]
+
+  @@map("usuarios")
+}
+
+model Testimonial {
+  id             String            @id @default(cuid())
+  title          String
+  content        String            @db.Text
+  
+  // Datos del Autor (Muy funcional para el cliente final)
+  authorName     String            @map("autor_nombre")
+  authorPosition String?           @map("autor_cargo")
+  authorEmail    String?           @map("autor_email")
+  authorCompany  String?           @map("autor_empresa")
+
+  status         TestimonialStatus @default(PENDING)
+  rejectionReason String?          @db.Text @map("motivo_rechazo")
+
+  // Relación con el Usuario que lo administra
+  userId         String?           @map("usuario_id")
+  user           User?             @relation(fields: [userId], references: [id])
+
+  // Relaciones Flexibles 
+  categories     TestimonialCategory[]
+  tags           TestimonialTag[]
+  media          Media[]
+  events         EngagementEvent[]
+
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+  publishedAt    DateTime?         @map("publicado_at")
+
+  @@map("testimonios")
+}
+
+// ─────────────────────────────────────────
+// CLASIFICACIÓN Y MULTIMEDIA
+// ─────────────────────────────────────────
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique @map("nombre")
+  slug        String   @unique
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  testimonials TestimonialCategory[]
+
+  @@map("categorias")
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique @map("nombre")
+  slug      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+
+  testimonials TestimonialTag[]
+
+  @@map("tags")
+}
+
+model Media {
+  id            String      @id @default(cuid())
+  url           String
+  type          String      // "IMAGE", "VIDEO", "YOUTUBE"
+  testimonialId String      @map("testimonio_id")
+  testimonial   Testimonial @relation(fields: [testimonialId], references: [id])
+
+  @@map("multimedia")
+}
+
+// ─────────────────────────────────────────
+// TABLAS INTERMEDIAS (RELACIONES MUCHOS A MUCHOS)
+// ─────────────────────────────────────────
+
+model TestimonialCategory {
+  testimonialId String @map("testimonio_id")
+  categoryId    String @map("categoria_id")
+  priority      Int    @default(0)
+
+  testimonial   Testimonial @relation(fields: [testimonialId], references: [id])
+  category      Category    @relation(fields: [categoryId], references: [id])
+
+  @@id([testimonialId, categoryId])
+  @@map("testimonios_categorias")
+}
+
+model TestimonialTag {
+  testimonialId String @map("testimonio_id")
+  tagId         String @map("tag_id")
+
+  testimonial   Testimonial @relation(fields: [testimonialId], references: [id])
+  tag           Tag         @relation(fields: [tagId], references: [id])
+
+  @@id([testimonialId, tagId])
+  @@map("testimonios_tags")
+}
+
+// ─────────────────────────────────────────
+// ANALYTICS (Telemetría Profesional)
+// ─────────────────────────────────────────
+
+model EngagementEvent {
+  id            String      @id @default(cuid())
+  testimonialId String      @map("testimonio_id")
+  type          EventType   @map("tipo")
+  source        String?     @map("fuente") // De qué web viene el click
+  ip            String?
+  userAgent     String?     @map("user_agent")
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  testimonial   Testimonial @relation(fields: [testimonialId], references: [id])
+
+  @@map("engagement_events")
 }

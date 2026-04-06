@@ -1,5 +1,3 @@
-// console.log("🚀 SERVER FILE EJECUTANDOSE");
-
 import app from "./app";
 
 
