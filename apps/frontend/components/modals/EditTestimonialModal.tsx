@@ -1,8 +1,11 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { MdClose, MdSave, MdCategory, MdLabel, MdCheckCircle } from "react-icons/md";
-import { updateTestimonialAction } from "@/lib/actions/testimonial-actions";
+// import { updateTestimonialAction } from "@/lib/actions/testimonial-actions";
+import api from "@/lib/axios"; //para reemplazar updateTestimonialAction
 import { useEffect } from "react";
+import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 
 interface Tag {
@@ -48,7 +51,7 @@ interface EditTestimonialModalProps {
 
 const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTags }: EditTestimonialModalProps) => {
   
-    
+    const router = useRouter();
     
 
     
@@ -57,6 +60,7 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
                 status: testimonial?.status,
                 categoryId: testimonial?.categoryId,
                 tagIds: testimonial?.tags?.map((t: any) => t.id) || [],
+                newTagsRaw: "",
             }
      }
     );
@@ -67,6 +71,7 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
             status: testimonial.status,
             categoryId: testimonial.categoryId,
             tagIds: testimonial.tags?.map((t: any) => t.id) || [],
+            newTagsRaw: "",
             });
     }
     }, [testimonial, reset]);
@@ -74,15 +79,26 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
 
   if (!isOpen || !testimonial) return null;
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: TestimonialFormValues) => {
     console.log("Actualizando testimonio:", testimonial.id, data);
+    const loadingToast = toast.loading("Actualizando testimonio...");
+
     try {
-      await updateTestimonialAction(testimonial.id, data);
-      alert("¡Actualizado con éxito!");
+      // 1. Petición PATCH con Axios
+      // Enviamos el ID en la URL y los datos en el body
+      await api.patch(`/testimonials/${testimonial.id}`, data);
+
+      toast.success("¡Testimonio actualizado!", { id: loadingToast });
+      
       onClose();
-      window.location.reload(); // Recargamos para ver los cambios
-    } catch (error) {
-      alert("Error al actualizar");
+      
+      // 2. Refrescamos los datos sin recargar la página entera
+      router.refresh();
+      
+    } catch (error: any ) {
+      const message = error.response?.data?.error || "Error al actualizar";
+      toast.error(message, { id: loadingToast });
+      console.error("Error al actualizar:", error);
     }
   };
 
