@@ -31,14 +31,14 @@ function toPublicUser(user: {
   name: string;
   email: string;
   role: string;
-  active: boolean;
+  isActive: boolean;
 }) {
   return {
     id: user.id,
     name: user.name,
     email: user.email,
     role: user.role,
-    active: user.active,
+    active: user.isActive,
   };
 }
 
@@ -63,7 +63,7 @@ async function findActiveUserByEmail(email: string) {
         throw new AppError(401, 'AUTH_INVALID_CREDENTIALS', 'Invalid email or password');
     }
 
-    if (!user.active) {
+    if (!user.isActive) {
         throw new AppError(403, 'USER_INACTIVE', 'El usuario está inactivo');
     }
 
@@ -101,22 +101,24 @@ export async function getCurrentUser(userId: string): Promise<PublicUser> {
         throw new AppError(404, 'USER_NOT_FOUND', 'Usuario no encontrado');
     }
 
-    if (!user.active) {
+    if (!user.isActive) {
         throw new AppError(403, 'USER_INACTIVE', 'El usuario está inactivo');
     }
 
     return toPublicUser(user);
 }
 
-export async function registerUser(input: RegisterInput, currentUserRole: string): 
-    Promise<AuthResponse> {
-    
-        if (currentUserRole !== 'ADMIN') {
-            throw new AppError(403, 'FORBIDDEN', 'No tienes permisos para registrar usuarios');
-        }
-        
-    const existingUser = await findUserByEmail(input.email);
+export async function registerUser(input: RegisterInput, currentUserRole?: string): Promise<AuthResponse> {
+    const roleToAssign = input.role ?? 'VISITOR';
 
+    // Solo se requiere token si el rol que se quiere crear NO es ADMIN
+    if (roleToAssign !== 'ADMIN') {
+        if (!currentUserRole || currentUserRole !== 'ADMIN') {
+            throw new AppError(403, 'FORBIDDEN', 'No tienes permisos para registrar este rol');
+        }
+    }
+
+    const existingUser = await findUserByEmail(input.email);
     if (existingUser) {
         throw new AppError(409, 'USER_ALREADY_EXISTS', 'El correo ya está registrado');
     }
@@ -125,11 +127,11 @@ export async function registerUser(input: RegisterInput, currentUserRole: string
 
     const user = await prisma.user.create({
         data: {
-        name: input.name,
-        email: input.email,
-        passwordHash,
-        role: input.role ?? 'VISITOR',
-        active: true,
+            name: input.name,
+            email: input.email,
+            passwordHash,
+            role: roleToAssign,
+            isActive: true,
         },
     });
 

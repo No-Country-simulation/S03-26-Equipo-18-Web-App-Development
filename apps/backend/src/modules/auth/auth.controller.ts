@@ -12,47 +12,44 @@ type AuthenticatedRequest = Request & {
 };
 
 export async function LoginController(
-    req: Request,
-    res: Response,
-    next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) {
-    try {
-        const parsedBody = loginSchema.safeParse(req.body);
+  try {
+    const parsedBody = loginSchema.safeParse(req.body);
 
-        if (!parsedBody.success ) {
-            return next(
-                new AppError(
-                    400,
-                    'VALIDATION_ERROR', 
-                    'Datos Invalidos',
-                    z.treeifyError(parsedBody.error)
-                )
-            );
-        }
-        const result = await loginUser(parsedBody.data);
-
-        return res.status(200).json({
-            success: true,
-            data: result,
-        });
-    } catch (error) {
-        return next(error);
+    if (!parsedBody.success) {
+      return next(
+        new AppError(
+          400,
+          "VALIDATION_ERROR",
+          "Datos Invalidos",
+          z.treeifyError(parsedBody.error),
+        ),
+      );
     }
+    const result = await loginUser(parsedBody.data);
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    return next(error);
+  }
 }
 
 export async function GetMeController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const authReq = req as AuthenticatedRequest;
     if (!authReq.user?.sub) {
       return next(
-        new AppError(
-          401,
-          "AUTH_INVALID_TOKEN",
-          "Token inválido o expirado",        )
+        new AppError(401, "AUTH_INVALID_TOKEN", "Token inválido o expirado"),
       );
     }
 
@@ -70,44 +67,56 @@ export async function GetMeController(
 export async function RegisterController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
-    const authReq = req as AuthenticatedRequest;
-
-    if (!authReq.user?.role) {
-      return next(
-        new AppError(401, 'AUTH_INVALID_TOKEN', 'Token inválido o expirado')
-      );
-    }
-
-    if (authReq.user.role !== 'ADMIN') {
-      return next(
-        new AppError(403, 'FORBIDDEN', 'No tienes permisos para registrar usuarios')
-      );
-    }
-
     const parsedBody = registerSchema.safeParse(req.body);
-
     if (!parsedBody.success) {
       return next(
         new AppError(
           400,
-          'VALIDATION_ERROR',
-          'Datos inválidos',
-          z.treeifyError(parsedBody.error)
-        )
+          "VALIDATION_ERROR",
+          "Datos inválidos",
+          z.treeifyError(parsedBody.error),
+        ),
       );
     }
 
-    const result = await registerUser(parsedBody.data, authReq.user.role);
+    const { role } = parsedBody.data;
+    const authReq = req as AuthenticatedRequest;
+
+    // Solo se requiere token si se va a crear un VISITOR o EDITOR
+    if (role && role !== "ADMIN") {
+      if (!authReq.user) {
+        return next(
+          new AppError(
+            401,
+            "AUTH_INVALID_TOKEN",
+            "Token requerido para este rol",
+          ),
+        );
+      }
+
+      if (authReq.user.role !== "ADMIN") {
+        return next(
+          new AppError(
+            403,
+            "FORBIDDEN",
+            "No tienes permisos para registrar este rol",
+          ),
+        );
+      }
+    }
+
+    const currentUserRole = authReq.user?.role ?? undefined;
+    const result = await registerUser(parsedBody.data, currentUserRole);
 
     return res.status(201).json({
       success: true,
       data: result,
     });
   } catch (error) {
+    console.error("REGISTER ERROR 👉", error);
     return next(error);
   }
 }
-
