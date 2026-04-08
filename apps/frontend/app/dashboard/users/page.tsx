@@ -19,24 +19,30 @@ const Users = async () => {
   if (session.user.role !== "ADMIN") { redirect("/dashboard");}
  
   const masterAdminId =  session.user.id;
-  
-  // 1. Usamos FETCH (porque estamos en el Servidor)
-  // Reemplazamos la URL por la que pase el equipo de Backend
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users?adminId=${masterAdminId}`, {
+
+
+  let usersList = [];
+
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users?adminId=${masterAdminId}`, {
       method: 'GET',
       headers: {
         // 'Authorization': `Bearer ${session.user.accessToken}`, // Si usan tokens
       },
-      next: { revalidate: 0 } // Esto asegura que siempre traiga datos frescos (no caché vieja)
+      next: { revalidate: 0 } 
     });
 
-    if (!response.ok) {
-         console.error("Error al obtener usuarios");
+    // 2. SOLO SI LA RESPUESTA ES EXITOSA, LLENAMOS LA LISTA
+    if (response.ok) {
+      usersList = await response.json();
+    } else {
+      console.warn("⚠️ El Backend respondió con error o no existe la ruta.");
     }
-
-  const usersList = await response.json();
-
-
+  } catch (error) {
+    // 3. CAPTURAMOS EL ERROR DE CONEXIÓN
+    // Si el servidor de tus compañeros está apagado, entrará aquí.
+    console.error("🌐 Error de conexión con el servidor:", error);
+  }
 
 
 

@@ -42,7 +42,9 @@ export default async function DashboardPage() {
 
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/dashboard/stats?adminId=${masterAdminId}`, {
-      next: { revalidate: 300 } // Cacheamos 5 minutos para no saturar el back
+      next: { revalidate: 300 }, // Cacheamos 5 minutos para no saturar el back
+       headers: { // 'Authorization': `Bearer ${session.user.accessToken}`, // Si usan tokens
+      },
     });
     
     if (response.ok) {

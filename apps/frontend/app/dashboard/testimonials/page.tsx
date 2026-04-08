@@ -98,9 +98,15 @@ const Testimonials = async (
     // 2. FETCH MULTIPLE: Reemplazamos los Promise.all de Prisma por llamadas a la API
     // Usamos fetch en servidor para aprovechar el caché de Next.js
     const [resTestimonials, resCategories, resTags] = await Promise.all([
-      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/testimonials?${queryParams}`, { next: { revalidate: 0 } }),
-      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/categories`, { next: { revalidate: 3600 } }), // Categorías pueden cachearse más tiempo
-      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tags`, { next: { revalidate: 3600 } }),
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/testimonials?${queryParams}`, { next: { revalidate: 0 },
+       headers: { // 'Authorization': `Bearer ${session.user.accessToken}`, // Si usan tokens
+      }, }),
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/categories`, { next: { revalidate: 3600 },  
+        headers: { // 'Authorization': `Bearer ${session.user.accessToken}`, // Si usan tokens
+      },}), // Categorías pueden cachearse más tiempo
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tags`, { next: { revalidate: 3600 }, 
+        headers: { // 'Authorization': `Bearer ${session.user.accessToken}`, // Si usan tokens
+      }, }),
     ]);
 
     if (resTestimonials.ok) testimonials = await resTestimonials.json();
