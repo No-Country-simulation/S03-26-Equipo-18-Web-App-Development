@@ -111,7 +111,7 @@ interface AddUserModalProps {
                 </button>
                 <button 
                   type="submit"
-                  className="flex-1 py-3 bg-brand text-white font-bold rounded-xl hover:opacity-90"
+                  className="flex-1 py-3 bg-primary text-white font-bold rounded-xl hover:opacity-90"
                 >
                   AGREGAR
                 </button>
