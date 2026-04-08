@@ -56,7 +56,7 @@ export default function ExportButton({ data, fileName = "Reporte_NoStories" }: E
   return (
     <button 
       onClick={handleExport}
-      className="mt-auto w-full bg-brand/10 hover:bg-brand/20 text-brand font-bold py-4 rounded-2xl transition-all border border-brand/30 flex items-center justify-center gap-2 group"
+      className="mt-auto w-full bg-primary/10 hover:bg-primary/20 text-txtPrimary font-bold py-4 rounded-2xl transition-all border border-primary/30 flex items-center justify-center gap-2 group"
     >
       <MdDownload className="text-xl group-hover:translate-y-0.5 transition-transform" />
       <span>Exportar Analíticas (.CSV)</span>

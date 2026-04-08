@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { MdAdd } from "react-icons/md";
-import AddUserModal from "./modals/AddUserModal";// Asegúrate de que la ruta sea correcta
-import { createUserAction } from "@/lib/actions/user-actions";
+import AddUserModal from "./modals/AddUserModal";
+
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/dist/client/components/navigation";
+import api from "@/lib/axios"; 
 
 
 
@@ -18,14 +20,26 @@ const BtnNewUser = ({ adminId }: Props ) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const router = useRouter();
+
     const handleAddUser = async (data: any) => {
-        const result = await createUserAction(data, adminId);
-        if (result.success) {
-            toast.success("¡Usuario creado!");
-            setIsModalOpen(false);
-        // Opcional: window.location.reload() para actualizar la lista, aunque lo ideal sería actualizar el estado en lugar de recargar
-        } else {
-            toast.error(result.error || "Error al crear");
+    const loadingToast = toast.loading("Creando usuario y enviando invitación...");
+
+        try {
+          await api.post("/users", {
+            ...data,
+            adminId // Nos aseguramos de enviar quién lo crea
+          });
+
+          toast.success("¡Usuario creado! Se envió el email de bienvenida", { id: loadingToast });
+          setIsModalOpen(false);
+          router.refresh(); 
+
+        } catch (error: any) {
+          // Axios captura errores de status 400, 401, 500 etc. aquí
+          const message = error.response?.data?.error || "Error al conectar con el servidor";
+          toast.error(message, { id: loadingToast });
+          console.error("Error en handleAddUser:", error);
         }
     };
 
@@ -37,7 +51,7 @@ const BtnNewUser = ({ adminId }: Props ) => {
         className="btn-primary flex items-center gap-2 hover:bg-txtPrimary hover:text-primary transition-all"
       >
         <MdAdd size={24} />
-        Nuevo usuario
+        <span>NUEVO USUARIO</span>
       </button>
 
       <AddUserModal 

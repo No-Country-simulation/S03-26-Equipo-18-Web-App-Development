@@ -8,6 +8,8 @@ export interface AppJwtPayload {
   sub: string;
   email?: string;
   role: Role;
+  isActive: boolean;
+  organization?: string | null;
 }
 
 function getEnv(name: string): string {

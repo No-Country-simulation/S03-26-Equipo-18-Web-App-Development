@@ -8,11 +8,12 @@ import { AppJwtPayload, signAccessToken } from '../../shared/utils/jwt';
 
 
 type PublicUser = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  active: boolean;
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    isActive: boolean;
+    organization?: string | null;
 };
 
 type AuthResponse = {
@@ -22,7 +23,8 @@ type AuthResponse = {
     name: string;
     email: string;
     role: string;
-    active: boolean;
+    isActive: boolean;
+    organization?: string | null;
   };
 };
 
@@ -32,13 +34,15 @@ function toPublicUser(user: {
   email: string;
   role: string;
   isActive: boolean;
+  organization?: string | null;
 }) {
   return {
     id: user.id,
     name: user.name,
     email: user.email,
     role: user.role,
-    active: user.isActive,
+    isActive: user.isActive,
+    organization: user.organization || null,
   };
 }
 
@@ -84,6 +88,8 @@ export async function loginUser(input: LoginInput): Promise<AuthResponse> {
         sub: user.id,
         email: user.email,
         role: user.role,
+        isActive: user.isActive,
+        organization: user.organization,
     };
 
     const token = signAccessToken(payload);
@@ -132,6 +138,8 @@ export async function registerUser(input: RegisterInput, currentUserRole?: strin
             passwordHash,
             role: roleToAssign,
             isActive: true,
+            organization: input.organization || null,
+
         },
     });
 
@@ -139,6 +147,8 @@ export async function registerUser(input: RegisterInput, currentUserRole?: strin
         sub: user.id,
         email: user.email,
         role: user.role,
+        isActive: user.isActive,
+        organization: user.organization,
     };
 
     const token = signAccessToken(payload);
