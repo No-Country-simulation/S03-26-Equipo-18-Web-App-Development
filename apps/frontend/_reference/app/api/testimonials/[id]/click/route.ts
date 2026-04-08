@@ -1,3 +1,11 @@
+/**
+ * NOTA PARA BACKEND:
+ * Este archivo será eliminado. Se deja solo como referencia de la lógica 
+ * de incremento que se espera en el servidor de Node.js.
+ */
+
+
+
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 

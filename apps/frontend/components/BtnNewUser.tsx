@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { MdAdd } from "react-icons/md";
 import AddUserModal from "./modals/AddUserModal";
-import { createUserAction } from "@/lib/actions/user-actions";
+
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/dist/client/components/navigation";
+import api from "@/lib/axios"; 
 
 
 
@@ -25,22 +26,20 @@ const BtnNewUser = ({ adminId }: Props ) => {
     const loadingToast = toast.loading("Creando usuario y enviando invitación...");
 
         try {
-          const response = await fetch("/api/users/create", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
+          await api.post("/users", {
+            ...data,
+            adminId // Nos aseguramos de enviar quién lo crea
           });
-
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || "Error al crear el usuario");
-          }
 
           toast.success("¡Usuario creado! Se envió el email de bienvenida", { id: loadingToast });
           setIsModalOpen(false);
           router.refresh(); 
+
         } catch (error: any) {
-          toast.error(error.message, { id: loadingToast });
+          // Axios captura errores de status 400, 401, 500 etc. aquí
+          const message = error.response?.data?.error || "Error al conectar con el servidor";
+          toast.error(message, { id: loadingToast });
+          console.error("Error en handleAddUser:", error);
         }
     };
 
