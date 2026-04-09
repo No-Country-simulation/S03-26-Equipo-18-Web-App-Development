@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0F171B;
+  --foreground: #2D3D45;
+}
+
+@theme {
+  /* Definimos colores de Figma como variables de Tailwind */
+  --color-primary: #00B4B4;  /* Cian esmeralda. Botones (CTA), líneas de gráficos, iconos activos */
+  --color-brand: #008F68;    
+  --color-dark: #0F171B;     /* Fondo base, el fondo más oscuro de toda la aplicación */
+  --color-medium: #757575;   
+  --color-chalk: #D9D9D9;    
+  --color-cards: #1A2429;    /* Superficie de los contenedores y widgets.*/
+  --color-sidebar: #243036;  /*Sidebar lateral y barras de búsqueda.*/
+  --color-txtPrimary: #F0F4F5;   /*Títulos y párrafos de lectura principal.*/
+  --color-txtSecondary: #8DA2AB; /*Descripciones, etiquetas de ejes y fechas.*/
+  --color-border: #2D3D45;    /*Líneas sutiles entre filas y bordes de cards.*/
+
+}
+
+body {
+  background: var(--background);
+  color: var(--color-txtPrimary);
+  font-family: Roboto, Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+@layer components {
+
+  .btn-primary {
+    @apply px-4 py-2 bg-primary text-txtPrimary rounded-lg hover:opacity-90 transition-all font-medium shadow-sm active:scale-95;
+  }
+  
+  /* Botón Secundario o de Fondo Tiza */
+  .btn-secondary {
+    @apply px-4 py-2 bg-cards text-txtSecondary rounded-lg hover:bg-gray-300 transition-all font-medium;
+  }
+
+  /* Badge Pendiente: Usamos un tono suave de tu Gris Medio para no distraer */
+  .badge-pending {
+    @apply px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-txtSecondary border border-cards/20;
+  }
+
+  /* Badge Aprobado: Verde Esmeralda en versión suave */
+  .badge-approved {
+    @apply px-2.5 py-0.5 rounded-full text-xs font-bold bg-brand/10 text-brand border border-brand/20;
+  }
+
+  /* Badge Rechazado: Un rojo sutil para contrastar con tu paleta */
+  .badge-rejected {
+    @apply px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-600 border border-red-100;
+  }
+
+  .title-page{
+    @apply text-4xl font-bold text-txtPrimary mb-6;
+  }
+
+  .title-description{
+    @apply text-base text-txtSecondary mb-4;
+  }
+}
+

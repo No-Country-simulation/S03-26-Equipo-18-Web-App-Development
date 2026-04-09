@@ -1,0 +1,140 @@
+// apps/backend/prisma//schema:prisma
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  VISITOR
+}
+
+enum TestimonialStatus {
+  PENDING
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  REJECTED
+}
+
+enum TestimonialType {
+  TEXT
+  IMAGE
+  VIDEO
+}
+
+enum EventType {
+  VIEW
+  CLICK_EMBED
+  CLICK_CTA
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  organization String?
+  email        String   @unique
+  passwordHash String
+  role         Role
+  isActive     Boolean  @default(true)
+  apiKey       String?  @unique
+  adminId      String?
+  admin        User?    @relation("AdminEditors", fields: [adminId], references: [id])
+  editors      User[]   @relation("AdminEditors")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  createdTestimonials Testimonial[] @relation("UserTestimonials")
+  ownedTestimonials    Testimonial[] @relation("AdminTestimonials")
+}
+
+model Testimonial {
+  id              String            @id @default(cuid())
+  title           String
+  content         String            @db.Text
+  authorName      String
+  authorPosition  String?
+  authorEmail     String?
+  authorCompany   String?
+
+  type            TestimonialType
+  status          TestimonialStatus @default(PENDING)
+
+  imageUrl        String?
+  videoUrl        String?
+  youtubeId       String?
+
+  rejectionReason String?           @db.Text
+  views           Int               @default(0)
+  clicks          Int               @default(0)
+  isFeatured      Boolean           @default(false)
+
+  categoryId      String?
+  category        Category?         @relation(fields: [categoryId], references: [id])
+
+  createdById     String?
+  createdBy       User?             @relation("UserTestimonials", fields: [createdById], references: [id])
+
+  adminId         String?
+  admin           User?             @relation("AdminTestimonials", fields: [adminId], references: [id])
+
+  testimonialTags TestimonialTag[]
+  engagementEvents EngagementEvent[]
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  publishedAt     DateTime?
+}
+
+model Category {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  slug         String        @unique
+  description  String?
+  createdAt    DateTime      @default(now())
+
+  testimonials Testimonial[]
+}
+
+model Tag {
+  id              String           @id @default(cuid())
+  name            String           @unique
+  slug            String           @unique
+  createdAt       DateTime         @default(now())
+
+  testimonialTags TestimonialTag[]
+}
+
+model TestimonialTag {
+  testimonialId String
+  tagId         String
+
+  testimonial   Testimonial @relation(fields: [testimonialId], references: [id], onDelete: Cascade)
+  tag           Tag         @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([testimonialId, tagId])
+  @@index([tagId])
+}
+
+model EngagementEvent {
+  id            String      @id @default(cuid())
+  testimonialId String
+  type          EventType
+  source        String?
+  ip            String?
+  userAgent     String?
+  createdAt     DateTime    @default(now())
+
+  testimonial   Testimonial @relation(fields: [testimonialId], references: [id], onDelete: Cascade)
+
+  @@index([testimonialId])
+  @@index([type])
+  @@index([createdAt])
+}
