@@ -36,7 +36,7 @@ const TestimonialCard = ({ userName, content, rating, location, category, status
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-brand/10 rounded-full flex items-center justify-center text-primary font-bold text-xl">
-            {userName[0].toUpperCase()}
+            {userName?.[0]?.toUpperCase() || "U"}
           </div>
           <div>
             <h4 className="font-bold text-dark text-sm uppercase tracking-tight">{userName}</h4>
@@ -65,15 +65,15 @@ const TestimonialCard = ({ userName, content, rating, location, category, status
         
         {/* Tags con el estilo de fondo oscuro de tu Figma */}
         <div className="flex flex-wrap gap-2">
-          {tags.map((tag, index) => (
-            <span 
-              key={index} 
-              className="bg-dark text-white text-[9px] px-2 py-0.5 rounded-md flex items-center gap-1 font-bold uppercase tracking-tighter"
-            >
-              <MdLabel size={10} />
-              {tag.name}
-            </span>
-          ))}
+          {(tags || []).map((tag, index) => (
+  <span 
+    key={index} 
+    className="bg-dark text-white text-[9px] px-2 py-0.5 rounded-md flex items-center gap-1 font-bold uppercase tracking-tighter"
+  >
+    <MdLabel size={10} />
+    {tag.name}
+  </span>
+))}
         </div>
 
         <div className="flex justify-between items-center">

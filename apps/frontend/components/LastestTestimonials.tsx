@@ -44,7 +44,7 @@ const LastestTestimonials = ({ testimonials }: LastestTestimonialsProps) => {
                 content={t.content}
                 rating={t.rating}
                 location={t.location}
-                category={t.category.name}
+                category={t.category?.name || "Sin categoria"}
                 status={t.status}
                 tags={t.tags}
               />

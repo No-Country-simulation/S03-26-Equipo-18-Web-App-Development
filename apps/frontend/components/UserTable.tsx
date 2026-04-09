@@ -1,65 +1,41 @@
 "use client";
 
 import { MdDeleteOutline, MdShield } from "react-icons/md";
-//import { deleteUserAction } from "@/lib/actions/user-actions";
 import { toast } from "react-hot-toast";
-import api from "@/lib/axios"; // Importamos la instancia de Axios
-import { useRouter } from "next/navigation"; // Para refrescar la página
-
+import { useRouter } from "next/navigation";
+import { deleteUser } from "@/services/user.service";
 
 interface UserFromDB {
-    id: string;
-    username: string;
-    email: string;
-    role: string;
-    isActive: boolean;
-    createdAt: string;
-    organization: string;
-    adminId: string | null;
+  id: string;
+  username: string;
+  email: string;
+  role: string;
+  isActive: boolean;
+  createdAt: string;
+  organization: string;
+  adminId: string | null;
 }
 
-
-
-const UserTable = ({users} : {users: UserFromDB[]}) => {
-
+const UserTable = ({ users }: { users: UserFromDB[] }) => {
   const router = useRouter();
 
   const handleDelete = async (id: string, username: string | null) => {
-    const confirm = window.confirm(`¿Estás seguro de que deseas eliminar a ${username || 'este usuario'}?`);
-    
-    if (confirm) {
-      try {
-        // 1. Petición DELETE con Axios
-        // La URL final dependerá de cómo la definan (ej: /users/123 o /users?id=123)
-        await api.delete(`/users/${id}`);
-        
-        toast.success("Usuario eliminado correctamente");
-        
-        // 2. Refrescamos la página para que el GET del Server Component 
-        // vuelva a ejecutarse y traiga la lista actualizada
-        router.refresh(); 
+    const confirm = window.confirm(
+      `¿Estás seguro de que deseas eliminar a ${username || "este usuario"}?`
+    );
 
-      } catch (error: any) {   
-          const errorMessage = error.response?.data?.message || "Error al eliminar";
-          toast.error(errorMessage);
-          console.error("Error al borrar usuario:", error);
-      }
+    if (!confirm) return;
+
+    const result = await deleteUser(id); // <-- usamos el service
+
+    if (result.success) {
+      toast.success("Usuario eliminado correctamente");
+      router.refresh(); // refresca la lista
+    } else {
+      toast.error(result.error);
+      console.error("Error al borrar usuario:", result.error);
     }
   };
-
-  // const handleDelete = async (id: string, username: string | null) => {
-  //   const confirm = window.confirm(`¿Estás seguro de que deseas eliminar a ${username || 'este usuario'}?`);
-    
-  //   if (confirm) {
-  //     const result = await deleteUserAction(id);
-  //     if (result.success) {
-  //       toast.success("Usuario eliminado correctamente");
-  //     } else {
-  //       toast.error(result.error || "Error al eliminar");
-  //     }
-  //   }
-  // };
-
 
   return (
     <table className="w-full text-left border-collapse">
@@ -72,50 +48,61 @@ const UserTable = ({users} : {users: UserFromDB[]}) => {
           <th className="p-4"></th>
         </tr>
       </thead>
-        <tbody className="divide-y divide-gray-50">
-            {users &&users.length > 0 ? (
-              users.map((user) => (
-                <tr key={user.id} className="hover:bg-sidebar-50/50 transition-colors">
-                  <td className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-brand/10 text-primary flex items-center justify-center font-bold text-sm border border-brand/20">
-                        {user.username ? user.username.substring(0, 2).toUpperCase() : "U"}
-                      </div>
-                      <span className="font-semibold text-dark">{user.username || "Sin nombre"}</span>
-                    </div>
-                  </td>
-                  <td className="p-4 text-medium">{user.email}</td>
-                  <td className="p-4">
-                    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold ${
-                      user.role === 'ADMIN' ? 'bg-primary text-dark' : 'bg-dark text-txtSecondary'
-                    }`}>
-                      {user.role === 'ADMIN' && <MdShield size={10} />}
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="p-4 text-medium text-sm">
-                    {new Date(user.createdAt).toLocaleDateString('es-ES')}
-                  </td>
-                  <td className="p-4 text-right">
-                    <button 
-                        onClick={() => handleDelete(user.id, user.username)}
-                        className="text-medium hover:text-red-500 transition-colors p-2">
-                      
-                      <MdDeleteOutline size={18} />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={5} className="p-10 text-center text-gray-400">
-                  No hay usuarios registrados en este instituto.
-                </td>
-              </tr>
-            )}
-        </tbody>
+      <tbody className="divide-y divide-gray-50">
+        {users && users.length > 0 ? (
+          users.map((user) => (
+            <tr
+              key={user.id}
+              className="hover:bg-sidebar-50/50 transition-colors"
+            >
+              <td className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-brand/10 text-primary flex items-center justify-center font-bold text-sm border border-brand/20">
+                    {user.username
+                      ? user.username.substring(0, 2).toUpperCase()
+                      : "U"}
+                  </div>
+                  <span className="font-semibold text-dark">
+                    {user.username || "Sin nombre"}
+                  </span>
+                </div>
+              </td>
+              <td className="p-4 text-medium">{user.email}</td>
+              <td className="p-4">
+                <span
+                  className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold ${
+                    user.role === "ADMIN"
+                      ? "bg-primary text-dark"
+                      : "bg-dark text-txtSecondary"
+                  }`}
+                >
+                  {user.role === "ADMIN" && <MdShield size={10} />}
+                  {user.role}
+                </span>
+              </td>
+              <td className="p-4 text-medium text-sm">
+                {new Date(user.createdAt).toLocaleDateString("es-ES")}
+              </td>
+              <td className="p-4 text-right">
+                <button
+                  onClick={() => handleDelete(user.id, user.username)}
+                  className="text-medium hover:text-red-500 transition-colors p-2"
+                >
+                  <MdDeleteOutline size={18} />
+                </button>
+              </td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan={5} className="p-10 text-center text-gray-400">
+              No hay usuarios registrados en este instituto.
+            </td>
+          </tr>
+        )}
+      </tbody>
     </table>
-  )
-}
+  );
+};
 
-export default UserTable
+export default UserTable;
