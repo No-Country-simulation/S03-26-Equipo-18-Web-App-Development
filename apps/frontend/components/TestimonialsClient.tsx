@@ -19,6 +19,14 @@ const TestimonialsClient = ({ testimonials, categories, allTags }:  any ) => {
         setIsModalOpen(false);
     };
 
+
+    // Si por algún error del backend testimonials no es un array, 
+    // evitamos que la página explote.
+    if (!Array.isArray(testimonials)) {
+        return <div className="text-center p-10 text-gray-500">No se pudieron cargar los testimonios.</div>;
+    }
+
+
   return(
         <>
                     {/* El Grid de Cards ahora es interactivo */}
@@ -34,9 +42,9 @@ const TestimonialsClient = ({ testimonials, categories, allTags }:  any ) => {
                     content={t.content}
                     rating={t.rating}
                     location={t.location}
-                    category={t.category.name}
+                    category={t.category.name || "Sin categoría"}
                     status={t.status}
-                    tags={t.tags}
+                    tags={t.tags || []}
                     />
                 </div>
                 ))}

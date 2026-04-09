@@ -18,14 +18,16 @@ async function main() {
       name: ADMIN_NAME,
       passwordHash,
       role: Role.ADMIN,
-      active: true,
+      isActive: true,
+      organization: null,
     },
     create: {
       name: ADMIN_NAME,
       email: ADMIN_EMAIL,
       passwordHash,
       role: Role.ADMIN,
-      active: true,
+      isActive: true,
+      organization: null,
     },
   });
 
@@ -35,7 +37,7 @@ async function main() {
     name: admin.name,
     email: admin.email,
     role: admin.role,
-    active: admin.active,
+    isActive: admin.isActive,
   });
 }
 

@@ -1,8 +1,10 @@
 "use client";
 
 import { MdDeleteOutline, MdShield } from "react-icons/md";
-import { deleteUserAction } from "@/lib/actions/user-actions";
+//import { deleteUserAction } from "@/lib/actions/user-actions";
 import { toast } from "react-hot-toast";
+import api from "@/lib/axios"; // Importamos la instancia de Axios
+import { useRouter } from "next/navigation"; // Para refrescar la página
 
 
 interface UserFromDB {
@@ -10,29 +12,53 @@ interface UserFromDB {
     username: string;
     email: string;
     role: string;
-    active: boolean;
-    createdAt: Date;
-    instituto: string;
+    isActive: boolean;
+    createdAt: string;
+    organization: string;
+    adminId: string | null;
 }
-
-
 
 
 
 const UserTable = ({users} : {users: UserFromDB[]}) => {
 
+  const router = useRouter();
+
   const handleDelete = async (id: string, username: string | null) => {
     const confirm = window.confirm(`¿Estás seguro de que deseas eliminar a ${username || 'este usuario'}?`);
     
     if (confirm) {
-      const result = await deleteUserAction(id);
-      if (result.success) {
+      try {
+        // 1. Petición DELETE con Axios
+        // La URL final dependerá de cómo la definan (ej: /users/123 o /users?id=123)
+        await api.delete(`/users/${id}`);
+        
         toast.success("Usuario eliminado correctamente");
-      } else {
-        toast.error(result.error || "Error al eliminar");
+        
+        // 2. Refrescamos la página para que el GET del Server Component 
+        // vuelva a ejecutarse y traiga la lista actualizada
+        router.refresh(); 
+
+      } catch (error: any) {   
+          const errorMessage = error.response?.data?.message || "Error al eliminar";
+          toast.error(errorMessage);
+          console.error("Error al borrar usuario:", error);
       }
     }
   };
+
+  // const handleDelete = async (id: string, username: string | null) => {
+  //   const confirm = window.confirm(`¿Estás seguro de que deseas eliminar a ${username || 'este usuario'}?`);
+    
+  //   if (confirm) {
+  //     const result = await deleteUserAction(id);
+  //     if (result.success) {
+  //       toast.success("Usuario eliminado correctamente");
+  //     } else {
+  //       toast.error(result.error || "Error al eliminar");
+  //     }
+  //   }
+  // };
 
 
   return (
@@ -49,7 +75,7 @@ const UserTable = ({users} : {users: UserFromDB[]}) => {
         <tbody className="divide-y divide-gray-50">
             {users &&users.length > 0 ? (
               users.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
+                <tr key={user.id} className="hover:bg-sidebar-50/50 transition-colors">
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-brand/10 text-primary flex items-center justify-center font-bold text-sm border border-brand/20">
