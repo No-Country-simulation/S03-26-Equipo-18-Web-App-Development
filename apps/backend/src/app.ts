@@ -18,11 +18,8 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/private/testimonials", testimoniosRouter);
-
-
 app.get("/health", (req, res) => {
-    res.status(200).json({ status: "ok" });
+  res.status(200).json({ status: "ok" });
 });
 
 // Privado / dashboard
@@ -42,6 +39,7 @@ app.use(
 );
 
 app.use("/auth", authRouter);
+app.use("/api/private/testimonials", testimoniosRouter);
 
 app.use(errorHandler);
 

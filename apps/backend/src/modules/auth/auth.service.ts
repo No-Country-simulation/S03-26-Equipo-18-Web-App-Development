@@ -1,5 +1,3 @@
-// src/modules/auth/auth.service.ts
-
 import { prisma } from '../../config/prisma';
 import type { LoginInput, RegisterInput } from './auth.schema';
 import { AppError } from '../../shared/utils/AppError';
@@ -17,45 +15,45 @@ type PublicUser = {
 };
 
 type AuthResponse = {
-  token: string;
-  user: {
+    token: string;
+    user: {
+        id: string;
+        name: string;
+        email: string;
+        role: string;
+        isActive: boolean;
+        organization?: string | null;
+    };
+};
+
+function toPublicUser(user: {
     id: string;
     name: string;
     email: string;
     role: string;
     isActive: boolean;
     organization?: string | null;
-  };
-};
-
-function toPublicUser(user: {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  isActive: boolean;
-  organization?: string | null;
 }) {
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    isActive: user.isActive,
-    organization: user.organization || null,
-  };
+    return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isActive: user.isActive,
+        organization: user.organization || null,
+    };
 }
 
 async function findUserByEmail(email: string) {
-  return prisma.user.findUnique({
-    where: { email },
-  });
+    return prisma.user.findUnique({
+        where: { email },
+    });
 }
 
 async function findUserById(id: string) {
-  return prisma.user.findUnique({
-    where: { id },
-  });
+    return prisma.user.findUnique({
+        where: { id },
+    });
 }
 
 async function findActiveUserByEmail(email: string) {
@@ -78,7 +76,7 @@ async function findActiveUserByEmail(email: string) {
 export async function loginUser(input: LoginInput): Promise<AuthResponse> {
     const user = await findActiveUserByEmail(input.email);
 
-    const isPasswordValid = await comparePassword(input.password, user.passwordHash);   
+    const isPasswordValid = await comparePassword(input.password, user.passwordHash);
 
     if (!isPasswordValid) {
         throw new AppError(401, 'AUTH_INVALID_CREDENTIALS', 'Invalid email or password');
@@ -114,13 +112,13 @@ export async function getCurrentUser(userId: string): Promise<PublicUser> {
     return toPublicUser(user);
 }
 
-export async function registerUser(input: RegisterInput, currentUserRole: string): 
+export async function registerUser(input: RegisterInput, currentUserRole: string):
     Promise<AuthResponse> {
-    
-        if (currentUserRole !== 'ADMIN') {
-            throw new AppError(403, 'FORBIDDEN', 'No tienes permisos para registrar usuarios');
-        }
-        
+
+    if (currentUserRole !== 'ADMIN') {
+        throw new AppError(403, 'FORBIDDEN', 'No tienes permisos para registrar usuarios');
+    }
+
     const existingUser = await findUserByEmail(input.email);
 
     if (existingUser) {
@@ -131,12 +129,12 @@ export async function registerUser(input: RegisterInput, currentUserRole: string
 
     const user = await prisma.user.create({
         data: {
-        name: input.name,
-        email: input.email,
-        passwordHash,
-        role: input.role ?? 'VISITOR',
-        isActive: true,
-        organization: input.organization || null,
+            name: input.name,
+            email: input.email,
+            passwordHash,
+            role: input.role ?? 'VISITOR',
+            isActive: true,
+            organization: input.organization || null,
         },
     });
 
