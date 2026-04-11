@@ -1,8 +1,7 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { MdClose, MdSave, MdCategory, MdLabel, MdCheckCircle } from "react-icons/md";
-// import { updateTestimonialAction } from "@/lib/actions/testimonial-actions";
-import api from "@/lib/axios"; //para reemplazar updateTestimonialAction
+import { updateTestimonial } from "@/services/testimonials.service";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -79,28 +78,21 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
 
   if (!isOpen || !testimonial) return null;
 
-  const onSubmit = async (data: TestimonialFormValues) => {
-    console.log("Actualizando testimonio:", testimonial.id, data);
-    const loadingToast = toast.loading("Actualizando testimonio...");
+    const onSubmit = async (data: TestimonialFormValues) => {
+        const loadingToast = toast.loading("Actualizando testimonio...");
 
-    try {
-      // 1. Petición PATCH con Axios
-      // Enviamos el ID en la URL y los datos en el body
-      await api.patch(`/testimonials/${testimonial.id}`, data);
+        // Llamamos al servicio en lugar de usar axios directamente aquí
+        const result = await updateTestimonial(testimonial.id, data);
 
-      toast.success("¡Testimonio actualizado!", { id: loadingToast });
-      
-      onClose();
-      
-      // 2. Refrescamos los datos sin recargar la página entera
-      router.refresh();
-      
-    } catch (error: any ) {
-      const message = error.response?.data?.error || "Error al actualizar";
-      toast.error(message, { id: loadingToast });
-      console.error("Error al actualizar:", error);
-    }
-  };
+        if (result.success) {
+            toast.success("¡Testimonio actualizado!", { id: loadingToast });
+            onClose();
+            router.refresh();
+        } else {
+            toast.error(result.error, { id: loadingToast });
+            console.error("Error al actualizar:", result.error);
+        }
+    };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark/60 backdrop-blur-sm">

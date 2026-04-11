@@ -22,6 +22,7 @@ const Users = () => {
   }
 
   const masterAdminId = user.id;
+
   const [usersList, setUsersList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,7 +55,7 @@ const Users = () => {
         <div>
           <TituloPage titulo="Usuarios" descripcion="Gestiona los usuarios de tu CMS." />
         </div>
-        <BtnNewUser adminId={masterAdminId} />
+        <BtnNewUser />{/* <BtnNewUser adminId={masterAdminId} /> */}
       </div>
       <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-chalk">
         <UserTable users={usersList} />

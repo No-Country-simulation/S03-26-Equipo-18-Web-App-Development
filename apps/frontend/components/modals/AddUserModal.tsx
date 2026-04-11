@@ -1,3 +1,5 @@
+"use client";
+
 import {useForm } from "react-hook-form";
 import { MdClose } from "react-icons/md";  
 import { z } from "zod";
@@ -8,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 const userSchema = z.object({
   username: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
   email: z.string().email("Introduce un correo electrónico válido").min(1, "El correo es obligatorio"),
-  role: z.string(), 
+  role: z.enum(["ADMIN", "EDITOR", "VISITOR"]), 
 });
 
 // Esto extrae el tipo de TypeScript automáticamente del esquema
@@ -17,12 +19,11 @@ type UserFormData = z.infer<typeof userSchema>;
 interface AddUserModalProps {
     isOpen: boolean;
     onClose: () => void;
-    adminId: string; // Para heredar el instituto del Admin
     onSubmit: (data: UserFormData) => void;
 }   
 
 
-    const AddUserModal = ({ isOpen, onClose, adminId, onSubmit }: AddUserModalProps) => {
+    const AddUserModal = ({ isOpen, onClose, onSubmit }: AddUserModalProps) => {
         const { 
             register, 
             handleSubmit, 
@@ -39,15 +40,13 @@ interface AddUserModalProps {
 
     const handleInternalSubmit = (data: UserFormData) => {
 
-
-        const fullUserData = {
-            ...data,
-            adminId: adminId,
-            apiKey: null,
-            password: "pass123", // Contraseña por defecto, el usuario la debe cambiar luego
+        const cleanData = {
+            name: data.username,
+            email: data.email,
+            role: data.role,
         };
 
-        onSubmit(fullUserData);
+        onSubmit(cleanData as any);
         reset(); // Limpia el formulario al terminar
         onClose(); // Cierra el modal después de enviar los datos
     };
@@ -59,7 +58,7 @@ interface AddUserModalProps {
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark/60 backdrop-blur-sm">
         <div className="bg-white w-full max-w-lg rounded-4xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200"> 
             {/* HEADER DEL MODAL */}
-            <div className="bg-brand p-6 text-white flex justify-between items-center">
+            <div className="bg-primary p-6 text-white flex justify-between items-center">
                 <div>
                     <h2 className="text-xl font-bold">Agregar Usuario</h2>
                 </div>
@@ -75,7 +74,7 @@ interface AddUserModalProps {
                 <input 
                   {...register("username")}
                   placeholder="Ej: Jane Doe"
-                  className="w-full p-4 bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-brand outline-none text-sm font-semibold"
+                  className="w-full p-4 bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-primary outline-none text-sm font-semibold"
                 />
                 {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username.message}</p>}
               </div>
@@ -85,7 +84,7 @@ interface AddUserModalProps {
                 <input 
                   {...register("email")}
                   placeholder="janedoe@edutech.com"
-                  className="w-full p-4 bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-brand outline-none text-sm font-semibold"
+                  className="w-full p-4 bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-primary outline-none text-sm font-semibold"
                 />
                 {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
               </div>
@@ -94,7 +93,7 @@ interface AddUserModalProps {
                 <label className="flex items-center gap-2 text-xs font-bold text-dark uppercase tracking-widest">ROL</label>
                 <select 
                   {...register("role")}
-                  className="w-full p-4 bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-brand outline-none text-sm font-semibold"
+                  className="w-full p-4 bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-primary outline-none text-sm font-semibold"
                 >
                   <option value="EDITOR">Editor</option>
                   <option value="ADMIN">Administrador</option>
