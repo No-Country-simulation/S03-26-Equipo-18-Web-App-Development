@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
-import Image from "next/image";
+import Footer from "@/components/Footer";
 
 
 
@@ -25,9 +25,9 @@ export default function DashboardLayout({
               {children}
             </div>
           </main>
-
+          <Footer/>
       </div>
-
+      <Footer/>
 
 
 
