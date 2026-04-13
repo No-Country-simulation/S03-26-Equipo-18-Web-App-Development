@@ -6,10 +6,11 @@ type JwtExpiresIn = SignOptions['expiresIn'];
 
 export interface AppJwtPayload {
   sub: string;
-  email?: string;
+  email: string;
   role: Role;
   isActive: boolean;
   organization?: string | null;
+  adminId?: string | null;
 }
 
 function getEnv(name: string): string {

@@ -1,65 +1,70 @@
 import { z } from "zod";
+import { TestimonialStatus, TestimonialType } from "@prisma/client";
 
-export const listTestimoniosQuerySchema = z.object({
-    page: z.coerce.number().int().min(1).default(1),
-    limit: z.coerce.number().int().min(1).max(100).default(10),
+export const listTestimonialsQuerySchema = z.object({
+    page: z.coerce.number().int().positive().default(1),
+    limit: z.coerce.number().int().positive().max(100).default(10),
     q: z.string().trim().optional(),
-    status: z.string().trim().optional(),
-    type: z.string().trim().optional(),
+    status: z.nativeEnum(TestimonialStatus).optional(),
+    type: z.nativeEnum(TestimonialType).optional(),
     categoryId: z.string().trim().optional(),
     createdById: z.string().trim().optional(),
-    sortBy: z.enum(["createdAt", "publishedAt", "views"]).default("createdAt"),
+    sortBy: z
+        .enum(["createdAt", "updatedAt", "publishedAt", "views", "clicks"])
+        .default("createdAt"),
     sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
 export const getTestimonioByIdParamsSchema = z.object({
-    id: z.string().min(1, "El id es obligatorio"),
-});
-
-export const updateStatusBodySchema = z.object({
-    estado: z.enum([
-        "PENDIENTE",
-        "BORRADOR",
-        "EN_REVISION",
-        "PUBLICADO",
-        "RECHAZADO",
-    ]),
-    motivoRechazo: z
-        .string()
-        .trim()
-        .optional()
-        .refine((val) => !val || val.length >= 10, "El motivo debe tener al menos 10 caracteres"),
+    id: z.string().trim().min(1, "Id is required"),
 });
 
 export const updateStatusParamsSchema = z.object({
-    id: z.string().min(1, "El id es obligatorio"),
+    id: z.string().trim().min(1, "Id is required"),
 });
 
-export const updateTestimonialBodySchema = z.object({
-    titulo: z.string().trim().min(1, "Título es obligatorio").max(200),
-    contenido: z.string().trim().min(10, "Contenido debe tener al menos 10 caracteres"),
-    autorNombre: z.string().trim().min(1, "Nombre del autor es obligatorio"),
-    autorCargo: z.string().trim().optional(),
-    autorEmail: z.string().email().optional(),
-    autorEmpresa: z.string().trim().optional(),
-    tipo: z.enum(["TEXTO", "IMAGEN", "VIDEO"]),
-    urlImagen: z.string().url().optional(),
-    urlVideo: z.string().url().optional(),
-    youtubeId: z.string().optional(),
-    categoriaId: z.string().optional(),
+export const updateTestimonialSchema = z
+    .object({
+        title: z.string().trim().min(2, "Title must have at least 2 characters").optional(),
+        content: z.string().trim().min(10, "Content must have at least 10 characters").optional(),
+        authorName: z.string().trim().min(2, "Author name must have at least 2 characters").optional(),
+        authorPosition: z.string().trim().optional().nullable(),
+        authorEmail: z.string().trim().email("Invalid email").optional().nullable(),
+        authorCompany: z.string().trim().optional().nullable(),
+        type: z.enum(["TEXT", "IMAGE", "VIDEO"]).optional(),
+        status: z.enum(["PENDING", "DRAFT", "IN_REVIEW", "PUBLISHED", "REJECTED"]).optional(),
+        imageUrl: z.string().trim().url("Invalid image URL").optional().nullable(),
+        videoUrl: z.string().trim().url("Invalid video URL").optional().nullable(),
+        youtubeId: z.string().trim().optional().nullable(),
+        rejectionReason: z.string().trim().optional().nullable(),
+        isFeatured: z.boolean().optional(),
+        categoryId: z.string().trim().optional().nullable(),
+        tagIds: z.array(z.string().trim().min(1)).optional(),
+    })
+    .refine((data) => Object.keys(data).length > 0, {
+        message: "At least one field must be provided",
+    });
+
+export type UpdateTestimonialStatusInput = z.infer<
+    typeof updateTestimonialStatusSchema
+>;
+
+export const updateTestimonialStatusSchema = z.object({
+    status: z.enum(["PENDING", "DRAFT", "IN_REVIEW", "PUBLISHED", "REJECTED"]),
+    rejectionReason: z.string().trim().optional(),
 });
 
 export const updateTestimonialParamsSchema = z.object({
     id: z.string().min(1, "El id es obligatorio"),
 });
 
-export const testimonioIdParamsSchema = z.object({
-    id: z.string().min(1, "El id es obligatorio"),
+export const testimonialIdParamSchema = z.object({
+    id: z.string().trim().min(1, "Id is required"),
 });
 
-export type ListTestimoniosQuery = z.infer<typeof listTestimoniosQuerySchema>;
+export type ListTestimoniosQuery = z.infer<typeof listTestimonialsQuerySchema>;
 export type GetTestimonioByIdParams = z.infer<typeof getTestimonioByIdParamsSchema>;
-export type UpdateEstadoBody = z.infer<typeof updateStatusBodySchema>;
 export type UpdateEstadoParams = z.infer<typeof updateStatusParamsSchema>;
-export type UpdateTestimonioBody = z.infer<typeof updateTestimonialBodySchema>;
+export type UpdateTestimonialInput = z.infer<typeof updateTestimonialSchema>;
+export type TestimonialIdParamInput = z.infer<typeof testimonialIdParamSchema>;
 export type UpdateTestimonioParams = z.infer<typeof updateTestimonialParamsSchema>;
