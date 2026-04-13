@@ -1,5 +1,8 @@
 import express from "express";
 
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./docs/swagger";
+
 import helmet from "helmet";
 import cors from "cors";
 import authRouter from "./modules/auth/auth.routes";
@@ -24,7 +27,7 @@ app.use("/api/public/testimonials", publicTestimoniosRouter);
 
 
 app.get("/health", (req, res) => {
-    res.status(200).json({ status: "ok" });
+  res.status(200).json({ status: "ok" });
 });
 
 // Privado / dashboard
@@ -46,5 +49,12 @@ app.use(
 app.use("/auth", authRouter);
 
 app.use(errorHandler);
+
+// documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get("/api-docs.json", (_req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpec);
+});
 
 export default app;
