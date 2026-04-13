@@ -1,5 +1,3 @@
-// src/modules/auth/auth.controller.ts
-
 import type { NextFunction, Request, Response } from "express";
 import { loginSchema, registerSchema } from "./auth.schema";
 import { getCurrentUser, loginUser, registerUser } from "./auth.service";
@@ -12,32 +10,33 @@ type AuthenticatedRequest = Request & {
 };
 
 export async function LoginController(
-    req: Request,
-    res: Response,
-    next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) {
-    try {
-        const parsedBody = loginSchema.safeParse(req.body);
+  try {
+    const parsedBody = loginSchema.safeParse(req.body);
 
-        if (!parsedBody.success ) {
-            return next(
-                new AppError(
-                    400,
-                    'VALIDATION_ERROR', 
-                    'Datos Invalidos',
-                    z.treeifyError(parsedBody.error)
-                )
-            );
-        }
-        const result = await loginUser(parsedBody.data);
-
-        return res.status(200).json({
-            success: true,
-            data: result,
-        });
-    } catch (error) {
-        return next(error);
+    if (!parsedBody.success) {
+      return next(
+        new AppError(
+          400,
+          'VALIDATION_ERROR',
+          'Datos Invalidos',
+          z.treeifyError(parsedBody.error)
+        )
+      );
     }
+
+    const result = await loginUser(parsedBody.data);
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    return next(error);
+  }
 }
 
 export async function GetMeController(
@@ -47,12 +46,14 @@ export async function GetMeController(
 ) {
   try {
     const authReq = req as AuthenticatedRequest;
+
     if (!authReq.user?.sub) {
       return next(
         new AppError(
           401,
           "AUTH_INVALID_TOKEN",
-          "Token inválido o expirado",        )
+          "Token inválido o expirado"
+        )
       );
     }
 
@@ -75,7 +76,7 @@ export async function RegisterController(
   try {
     const authReq = req as AuthenticatedRequest;
 
-    if (!authReq.user?.role) {
+    if (!authReq.user) {
       return next(
         new AppError(401, 'AUTH_INVALID_TOKEN', 'Token inválido o expirado')
       );
@@ -100,7 +101,7 @@ export async function RegisterController(
       );
     }
 
-    const result = await registerUser(parsedBody.data, authReq.user.role);
+    const result = await registerUser(parsedBody.data, authReq.user);
 
     return res.status(201).json({
       success: true,
@@ -110,4 +111,3 @@ export async function RegisterController(
     return next(error);
   }
 }
-

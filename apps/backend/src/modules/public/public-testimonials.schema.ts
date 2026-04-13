@@ -13,4 +13,9 @@ export const createPublicTestimonioSchema = z.object({
     youtubeUrl: z.string().url().optional().or(z.literal("")),
 });
 
+export const testimonialIdParamSchema = z.object({
+    id: z.string().trim().min(1, "El id es obligatorio"),
+});
+
 export type CreatePublicTestimonioInput = z.infer<typeof createPublicTestimonioSchema>;
+export type TestimonialIdParamInput = z.infer<typeof testimonialIdParamSchema>;

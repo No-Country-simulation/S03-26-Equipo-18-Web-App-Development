@@ -1,12 +1,28 @@
 import { Router } from "express";
-import { upload } from "../../middlewares/upload";
-import { PublicTestimoniosController } from "./public-testimonials.controller";
+import multer from "multer";
+import { PublicTestimonialsController } from "./public-testimonials.controller";
 
-const router = Router();
-const controller = new PublicTestimoniosController();
+const publicTestimonialsRouter = Router();
+const controller = new PublicTestimonialsController();
 
-router.post("/", upload.single("file"), (req, res, next) =>
-    controller.create(req, res, next)
+const upload = multer({
+    storage: multer.memoryStorage(),
+});
+
+publicTestimonialsRouter.post(
+    "/",
+    upload.single("file"),
+    controller.create.bind(controller)
 );
 
-export default router;
+publicTestimonialsRouter.post(
+    "/:id/views",
+    controller.incrementViews.bind(controller)
+);
+
+publicTestimonialsRouter.post(
+    "/:id/clicks",
+    controller.incrementClicks.bind(controller)
+);
+
+export default publicTestimonialsRouter;
