@@ -21,6 +21,7 @@ export async function getCategories(_req: Request, res: Response, next: NextFunc
       data: categories,
     });
   } catch (error) {
+    console.error('Error fetching categories:', error);
     return next(error);
   }
 }
