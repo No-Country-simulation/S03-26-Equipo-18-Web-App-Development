@@ -81,7 +81,6 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
     const onSubmit = async (data: TestimonialFormValues) => {
         const loadingToast = toast.loading("Actualizando testimonio...");
 
-        // Llamamos al servicio en lugar de usar axios directamente aquí
         const result = await updateTestimonial(testimonial.id, data);
 
         if (result.success) {
