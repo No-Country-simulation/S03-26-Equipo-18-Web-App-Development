@@ -1,3 +1,4 @@
+import { tr } from 'zod/locales';
 import { prisma } from '../../config/prisma';
 import { AppError } from '../../shared/utils/AppError';
 import type { CreateCategoryInput, UpdateCategoryInput } from './categories.schema';
@@ -71,7 +72,9 @@ export async function findAllCategories() {
       name: true,
       slug: true,
       description: true,
+      isSystem: true,
       createdAt: true,
+      updatedAt: true,
       _count: {
         select: {
           testimonials: true,
@@ -89,7 +92,9 @@ export async function findCategoryById(id: string) {
       name: true,
       slug: true,
       description: true,
+      isSystem: true,
       createdAt: true,
+      updatedAt: true,
       _count: {
         select: {
           testimonials: true,
@@ -129,6 +134,7 @@ export async function createCategory(data: CreateCategoryInput) {
       slug: true,
       description: true,
       createdAt: true,
+      updatedAt: true,
       _count: {
         select: {
           testimonials: true,
@@ -141,11 +147,19 @@ export async function createCategory(data: CreateCategoryInput) {
 export async function updateCategory(id: string, data: UpdateCategoryInput) {
   const existingCategory = await prisma.category.findUnique({
     where: { id },
-    select: { id: true },
+    select: { id: true, isSystem: true },
   });
 
   if (!existingCategory) {
     throw new AppError(404, 'CATEGORY_NOT_FOUND', 'Categoría no encontrada');
+  }
+
+  if (existingCategory.isSystem && (data.name !== undefined || data.slug !== undefined)) {
+    throw new AppError(
+      409,
+      'CATEGORY_SYSTEM_IMMUTABLE',
+      'No se puede modificar el nombre o slug de una categoría base del sistema'
+    );
   }
 
   const updateData: {
@@ -201,12 +215,22 @@ export async function deleteCategory(id: string) {
       name: true,
       slug: true,
       description: true,
+      isSystem: true,
       createdAt: true,
+      updatedAt: true,
     },
   });
 
   if (!existingCategory) {
     throw new AppError(404, 'CATEGORY_NOT_FOUND', 'Categoría no encontrada');
+  }
+
+  if (existingCategory.isSystem) {
+    throw new AppError(
+      409,
+      'CATEGORY_SYSTEM_PROTECTED',
+      'No se puede eliminar una categoría base del sistema'
+    );
   }
 
   const testimonialsCount = await prisma.testimonial.count({
