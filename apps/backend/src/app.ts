@@ -1,5 +1,8 @@
 import express from "express";
 
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./docs/swagger";
+
 import helmet from "helmet";
 import cors from "cors";
 import authRouter from "./modules/auth/auth.routes";
@@ -48,5 +51,12 @@ app.use("/api/public/testimonials", publicTestimoniosRouter);
 app.use('/api/private/categories', categoriesRouter);
 
 app.use(errorHandler);
+
+// documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get("/api-docs.json", (_req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpec);
+});
 
 export default app;

@@ -200,5 +200,239 @@ sortOrder=desc
   }
 }
 
+## Documentación
+## Endpoint: `POST /api/public/testimonials`
+
+### Campos que DEBE enviar el frontend
+
+**REQUERIDOS:**
+```json
+{
+  "title": "Excelente experiencia",
+  "content": "La plataforma mejoró nuestro flujo de trabajo...",
+  "authorName": "Jane Smith",
+  "type": "TEXT"
+}
+```
+
+**OPCIONALES:**
+```json
+{
+  "authorPosition": "Gerente de Marketing",
+  "authorEmail": "jane@ejemplo.com", 
+  "authorCompany": "Acme Corp",
+  "imageUrl": "https://cdn.ejemplo.com/imagen.jpg",
+  "videoUrl": "https://cdn.ejemplo.com/video.mp4",
+  "youtubeId": "dQw4w9WgXcQ",
+  "categoryId": "cmabc123456"
+}
+```
+
+### Payload completo de ejemplo
+```json
+{
+  "title": "Excelente experiencia con la plataforma",
+  "content": "La plataforma mejoró nuestro flujo de trabajo y nos ayudó a gestionar mejor los testimonios.",
+  "authorName": "Jane Smith",
+  "authorPosition": "Gerente de Marketing",
+  "authorEmail": "jane@ejemplo.com",
+  "authorCompany": "Acme Corp",
+  "type": "TEXT",
+  "imageUrl": null,
+  "videoUrl": null,
+  "youtubeId": null,
+  "categoryId": "cmabc123456"
+}
+```
+
+## ⚠️ NO enviar estos campos (backend los genera)
+
+❌ id
+❌ status
+❌ rejectionReason
+❌ views
+❌ clicks
+❌ isFeatured
+❌ createdById
+❌ adminId
+❌ createdAt
+❌ updatedAt
+❌ publishedAt
 
 
+**Backend establece por defecto:**
+- `status` → `PENDING`
+- `views` → `0`
+- `clicks` → `0`
+- `isFeatured` → `false`
+
+## Reglas por tipo de testimonio
+
+### 📝 TEXT (recomendado para básico)
+```json
+{
+  "title": "Excelente soporte",
+  "content": "El equipo resolvió nuestros problemas rápidamente.",
+  "authorName": "Juan Pérez",
+  "type": "TEXT"
+}
+```
+
+### 🖼️ IMAGE
+```json
+{
+  "title": "Excelente producto", 
+  "content": "Gran experiencia con el producto.",
+  "authorName": "María García",
+  "type": "IMAGE",
+  "imageUrl": "https://cdn.ejemplo.com/imagen.jpg"
+}
+```
+
+### 🎥 VIDEO
+**Con videoUrl:**
+```json
+{
+  "title": "Testimonio en video",
+  "content": "Nuestro equipo grabó este testimonio.",
+  "authorName": "Carlos López", 
+  "type": "VIDEO",
+  "videoUrl": "https://cdn.ejemplo.com/video.mp4"
+}
+```
+
+**Con youtubeId:**
+```json
+{
+  "title": "Testimonio en video",
+  "content": "Nuestro equipo grabó este testimonio.",
+  "authorName": "Carlos López",
+  "type": "VIDEO", 
+  "youtubeId": "dQw4w9WgXcQ"
+}
+```
+
+## Validaciones frontend recomendadas
+✅ title: mínimo 2 caracteres
+✅ content: mínimo 10 caracteres
+✅ authorName: mínimo 2 caracteres
+✅ authorEmail: email válido (si se envía)
+✅ type: TEXT|IMAGE|VIDEO
+
+🔄 Si type=IMAGE → imageUrl requerido
+🔄 Si type=VIDEO → videoUrl O youtubeId requerido
+🔄 Si type=TEXT → media opcional (null)
+
+
+## Respuestas esperadas
+
+### ✅ HTTP 201 (éxito)
+```json
+{
+  "success": true,
+  "data": {
+    "id": "cmabc123456",
+    "message": "Tu testimonio fue recibido y está pendiente de revisión"
+  }
+}
+```
+
+### ❌ HTTP 400 (validación)
+```json
+{
+  "success": false,
+  "code": "VALIDATION_ERROR",
+  "message": "Datos inválidos",
+  "details": {
+    "title": ["Debe tener al menos 2 caracteres"],
+    "content": ["Debe tener al menos 10 caracteres"]
+  }
+}
+```
+
+## Ejemplo cURL completo
+```bash
+curl -X POST "http://localhost:3000/api/public/testimonials" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "¡Servicio increíble!",
+    "content": "El equipo superó nuestras expectativas.",
+    "authorName": "Juan Pérez", 
+    "authorEmail": "juan@ejemplo.com",
+    "type": "TEXT"
+  }'
+```
+
+## Payload mínimo seguro (recomendado)
+```json
+{
+  "title": "Excelente experiencia",
+  "content": "La plataforma mejoró nuestro flujo de trabajo.",
+  "authorName": "Jane Smith",
+  "type": "TEXT"
+}
+```
+
+## 📱 Notas para frontend
+
+✅ **Siempre enviar** `type`  
+❌ **NO enviar** campos de admin  
+🎯 **Preferir** `TEXT` para testimonios básicos  
+🖼️ **Usar** `IMAGE` solo con `imageUrl`  
+🎥 **Usar** `VIDEO` solo con `videoUrl`/`youtubeId`  
+⏳ **Estado inicial**: `PENDING` (no se publica inmediatamente)
+
+---
+
+## Documentación Swagger
+
+La API cuenta con documentación interactiva generada con Swagger/OpenAPI, donde se pueden consultar los endpoints disponibles, los parámetros requeridos, los ejemplos de solicitud y las respuestas esperadas.
+
+### Cómo ejecutar la documentación
+
+1. Levanta el proyecto backend en tu entorno local.
+2. Verifica que el servidor esté corriendo correctamente.
+3. Abre tu navegador y accede a la ruta de documentación de Swagger.
+
+### Endpoint para ver la documentación
+
+La documentación se puede visualizar en el siguiente endpoint:
+
+```bash
+http://localhost:3000/api-docs
+```
+
+### JSON de la documentación
+
+Si necesitas consumir la especificación OpenAPI en formato JSON, puedes usar:
+
+```bash
+http://localhost:3000/api-docs.json
+```
+
+### Qué puedes encontrar allí
+
+En Swagger podrás ver:
+
+- Los endpoints públicos y privados.
+- Los parámetros de ruta, query y body.
+- Los modelos de request y response.
+- Ejemplos de uso para cada endpoint.
+- Los códigos de respuesta posibles.
+- La autenticación requerida para endpoints protegidos.
+
+### Autenticación
+
+Para consumir los endpoints privados desde Swagger, debes ingresar un token JWT en el apartado de autorización con el formato:
+
+```bash
+Bearer TU_TOKEN
+```
+
+### Nota
+
+Si la documentación no carga, verifica que:
+
+- El backend esté ejecutándose correctamente.
+- El archivo de configuración de Swagger esté incluido en el proyecto.
+- Los schemas y rutas documentadas estén bien definidos.
