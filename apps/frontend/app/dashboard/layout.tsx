@@ -25,6 +25,7 @@ export default function DashboardLayout({
               {children}
             </div>
           </main>
+          {/* FOOTER: borrar si no queda bien */ }
           <Footer/>
       </div>
       <Footer/>
