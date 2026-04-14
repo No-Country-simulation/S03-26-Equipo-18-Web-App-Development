@@ -9,6 +9,7 @@ import authRouter from "./modules/auth/auth.routes";
 import { errorHandler } from "./middlewares/error-handler.middleware";
 import testimoniosRouter from "./modules/testimonial/testimonial.router";
 import publicTestimoniosRouter from "./modules/public/public-testimonials.router";
+import categoriesRouter from "./modules/categories/categories.routes";
 
 
 const app = express();
@@ -22,21 +23,10 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/private/testimonials", testimoniosRouter);
-app.use("/api/public/testimonials", publicTestimoniosRouter);
-
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
-
-// Privado / dashboard
-app.use(
-  ['/auth', '/api/private'],
-  cors({
-    origin: allowedOrigins,
-  })
-);
 
 // Público
 app.use(
@@ -46,7 +36,19 @@ app.use(
   })
 );
 
+// Privado / dashboard
+app.use(
+  ['/auth', '/api/private'],
+  cors({
+    origin: allowedOrigins,
+  })
+);
+
+
 app.use("/auth", authRouter);
+app.use("/api/private/testimonials", testimoniosRouter);
+app.use("/api/public/testimonials", publicTestimoniosRouter);
+app.use('/api/private/categories', categoriesRouter);
 
 app.use(errorHandler);
 
