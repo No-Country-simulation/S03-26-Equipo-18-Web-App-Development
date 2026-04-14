@@ -11,7 +11,6 @@ export const loginSchema = z.object({
           : 'El email no es válido',
     })
   ),
-
   password: z
     .string({
       error: (iss) =>
@@ -33,5 +32,5 @@ export const registerSchema = z.object({
   isActive: z.boolean().default(true),
 });
 
-export type LoginInput = z.infer<typeof loginSchema>;   
+export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;

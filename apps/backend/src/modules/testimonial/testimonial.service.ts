@@ -1,6 +1,7 @@
-import { AppError } from './../../shared/utils/app-error';
-import { PrismaClient } from "@prisma/client";
-import { ListTestimoniosQuery, UpdateTestimonioBody } from "./testimonials.schema";
+import { PrismaClient, Prisma, TestimonialStatus, TestimonialType } from "@prisma/client";
+import { AppError } from "../../shared/utils/AppError";
+import { ListTestimoniosQuery } from "./testimonials.schema";
+import type { UpdateTestimonialInput } from "./testimonials.schema";
 
 const prisma = new PrismaClient();
 
@@ -20,22 +21,32 @@ export class TestimonialService {
 
         const skip = (page - 1) * limit;
 
-        const where: any = {
-            ...(status ? { status } : {}),
-            ...(type ? { type } : {}),
-            ...(categoryId ? { categoryId } : {}),
-            ...(createdById ? { createdById } : {}),
-            ...(q
-                ? {
-                    OR: [
-                        { title: { contains: q, mode: "insensitive" } },
-                        { content: { contains: q, mode: "insensitive" } },
-                        { authorName: { contains: q, mode: "insensitive" } },
-                        { authorCompany: { contains: q, mode: "insensitive" } },
-                    ],
-                }
-                : {}),
-        };
+        const where: Prisma.TestimonialWhereInput = {};
+
+        if (status) {
+            where.status = status;
+        }
+
+        if (type) {
+            where.type = type;
+        }
+
+        if (categoryId) {
+            where.categoryId = categoryId;
+        }
+
+        if (createdById) {
+            where.createdById = createdById;
+        }
+
+        if (q) {
+            where.OR = [
+                { title: { contains: q, mode: "insensitive" } },
+                { content: { contains: q, mode: "insensitive" } },
+                { authorName: { contains: q, mode: "insensitive" } },
+                { authorCompany: { contains: q, mode: "insensitive" } },
+            ];
+        }
 
         const [total, items] = await Promise.all([
             prisma.testimonial.count({ where }),
@@ -104,27 +115,30 @@ export class TestimonialService {
         return testimonial;
     }
 
-    async updateStatus(id: string, data: { estado: string; motivoRechazo?: string }) {
+    async updateStatus(
+        id: string,
+        data: { status: TestimonialStatus; rejectionReason?: string }
+    ) {
         const testimonial = await prisma.testimonial.findUnique({
             where: { id },
         });
 
         if (!testimonial) {
-            throw new AppError(404, "TESTIMONIO_NOT_FOUND", "Testimonio no encontrado");
+            throw new AppError(404, "TESTIMONIAL_NOT_FOUND", "Testimonial not found");
         }
 
-        const updateData: any = {
-            estado: data.estado,
+        const updateData: Prisma.TestimonialUpdateInput = {
+            status: data.status,
         };
 
-        if (data.motivoRechazo !== undefined) {
-            updateData.motivoRechazo = data.motivoRechazo;
+        if (data.rejectionReason !== undefined) {
+            updateData.rejectionReason = data.rejectionReason;
         }
 
-        if (data.estado === "PUBLICADO") {
-            updateData.publicadoAt = new Date();
+        if (data.status === "PUBLISHED") {
+            updateData.publishedAt = new Date();
         } else {
-            updateData.publicadoAt = null;
+            updateData.publishedAt = null;
         }
 
         const updated = await prisma.testimonial.update({
@@ -151,45 +165,143 @@ export class TestimonialService {
         return updated;
     }
 
-    async update(id: string, data: UpdateTestimonioBody) {
-        const testimonial = await prisma.testimonial.findUnique({
+    async update(id: string, data: UpdateTestimonialInput) {
+        const existingTestimonial = await prisma.testimonial.findUnique({
             where: { id },
-        });
-
-        if (!testimonial) {
-            throw new AppError(404, "TESTIMONIO_NOT_FOUND", "Testimonio no encontrado");
-        }
-
-        // Si cambian las URLs de imagen/video, limpiar youtubeId y viceversa
-        let cleanData = { ...data };
-
-        if (data.urlImagen || data.urlVideo) {
-            cleanData.youtubeId = undefined;
-        } else if (data.youtubeId) {
-            cleanData.urlImagen = undefined;
-            cleanData.urlVideo = undefined;
-        }
-
-        const updated = await prisma.testimonial.update({
-            where: { id },
-            data: cleanData,
             include: {
-                category: true,
-                createdBy: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        role: true,
-                    },
-                },
-                testimonialTags: {
-                    include: {
-                        tag: true,
-                    },
-                },
+                testimonialTags: true,
             },
         });
+
+        if (!existingTestimonial) {
+            throw new AppError(404, "TESTIMONIAL_NOT_FOUND", "Testimonial not found");
+        }
+
+        const updateData: Prisma.TestimonialUpdateInput = {};
+
+        if (data.title !== undefined) {
+            updateData.title = data.title;
+        }
+
+        if (data.content !== undefined) {
+            updateData.content = data.content;
+        }
+
+        if (data.authorName !== undefined) {
+            updateData.authorName = data.authorName;
+        }
+
+        if (data.authorPosition !== undefined) {
+            updateData.authorPosition = data.authorPosition;
+        }
+
+        if (data.authorEmail !== undefined) {
+            updateData.authorEmail = data.authorEmail;
+        }
+
+        if (data.authorCompany !== undefined) {
+            updateData.authorCompany = data.authorCompany;
+        }
+
+        if (data.type !== undefined) {
+            updateData.type = data.type as TestimonialType;
+        }
+
+        if (data.status !== undefined) {
+            updateData.status = data.status as TestimonialStatus;
+            updateData.publishedAt = data.status === "PUBLISHED" ? new Date() : null;
+        }
+
+        if (data.imageUrl !== undefined) {
+            updateData.imageUrl = data.imageUrl;
+        }
+
+        if (data.videoUrl !== undefined) {
+            updateData.videoUrl = data.videoUrl;
+        }
+
+        if (data.youtubeId !== undefined) {
+            updateData.youtubeId = data.youtubeId;
+        }
+
+        if (data.rejectionReason !== undefined) {
+            updateData.rejectionReason = data.rejectionReason;
+        }
+
+        if (data.isFeatured !== undefined) {
+            updateData.isFeatured = data.isFeatured;
+        }
+
+        if (data.categoryId !== undefined) {
+            if (data.categoryId === null || data.categoryId === "") {
+                updateData.category = {
+                    disconnect: true,
+                };
+            } else {
+                updateData.category = {
+                    connect: {
+                        id: data.categoryId,
+                    },
+                };
+            }
+        }
+
+        const updated = await prisma.$transaction(async (tx) => {
+            await tx.testimonial.update({
+                where: { id },
+                data: updateData,
+            });
+
+            if (data.tagIds !== undefined) {
+                await tx.testimonialTag.deleteMany({
+                    where: {
+                        testimonialId: id,
+                    },
+                });
+
+                if (data.tagIds.length > 0) {
+                    await tx.testimonialTag.createMany({
+                        data: data.tagIds.map((tagId) => ({
+                            testimonialId: id,
+                            tagId,
+                        })),
+                        skipDuplicates: true,
+                    });
+                }
+            }
+
+            return tx.testimonial.findUnique({
+                where: { id },
+                include: {
+                    category: true,
+                    createdBy: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            role: true,
+                        },
+                    },
+                    admin: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            role: true,
+                        },
+                    },
+                    testimonialTags: {
+                        include: {
+                            tag: true,
+                        },
+                    },
+                },
+            });
+        });
+
+        if (!updated) {
+            throw new AppError(404, "TESTIMONIAL_NOT_FOUND", "Testimonial not found");
+        }
 
         return updated;
     }
@@ -201,12 +313,11 @@ export class TestimonialService {
         });
 
         if (!testimonial) {
-            throw new AppError(404, "TESTIMONIO_NOT_FOUND", "Testimonio no encontrado");
+            throw new AppError(404, "TESTIMONIAL_NOT_FOUND", "Testimonial not found");
         }
 
         await prisma.testimonial.delete({
             where: { id },
         });
     }
-
 }
