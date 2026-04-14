@@ -1,3 +1,4 @@
+// src/middlewares/error-handler.middleware.ts
 import { NextFunction, Request, Response } from 'express';
 import z, { ZodError } from 'zod';
 import { AppError } from '../shared/utils/AppError';

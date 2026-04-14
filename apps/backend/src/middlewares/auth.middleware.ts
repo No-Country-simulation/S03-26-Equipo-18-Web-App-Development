@@ -59,7 +59,7 @@ export function authorizeRoles(...allowedRoles: AppJwtPayload['role'][]) {
 
     if (!allowedRoles.includes(userRole)) {
       return next(
-        new AppError(403, 'AUTH_FORBIDDEN', 'No tienes permisos para realizar esta acción, solo un administrador puede realizar esta acción')
+        new AppError(403, 'AUTH_FORBIDDEN', `No tienes permisos para realizar esta acción, solo un ${allowedRoles.join(', ')} puede realizar esta acción`)
       );
     }
 
