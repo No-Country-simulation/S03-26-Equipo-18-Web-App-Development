@@ -1,5 +1,3 @@
-// src/modules/auth/auth.controller.ts
-
 import type { NextFunction, Request, Response } from "express";
 import { loginSchema, registerSchema } from "./auth.schema";
 import { getCurrentUser, loginUser, registerUser } from "./auth.service";
@@ -47,6 +45,7 @@ export async function GetMeController(
 ) {
   try {
     const authReq = req as AuthenticatedRequest;
+
     if (!authReq.user?.sub) {
       return next(
         new AppError(401, "AUTH_INVALID_TOKEN", "Token inválido o expirado"),
@@ -108,8 +107,11 @@ export async function RegisterController(
       }
     }
 
-    const currentUserRole = authReq.user?.role ?? undefined;
-    const result = await registerUser(parsedBody.data, currentUserRole);
+    if (!authReq.user) {
+      return next(new AppError(401, "AUTH_INVALID_TOKEN", "Token requerido"));
+    }
+
+    const result = await registerUser(parsedBody.data, authReq.user);
 
     return res.status(201).json({
       success: true,

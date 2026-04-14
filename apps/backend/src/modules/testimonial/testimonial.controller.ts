@@ -1,16 +1,24 @@
-import { AppError } from './../../shared/utils/app-error';
+import { AppError } from "../../shared/utils/AppError";
 import { Request, Response, NextFunction } from "express";
 import { TestimonialService } from "./testimonial.service";
-import { listTestimoniosQuerySchema, getTestimonioByIdParamsSchema, updateStatusParamsSchema, updateStatusBodySchema, updateTestimonialParamsSchema, updateTestimonialBodySchema, testimonioIdParamsSchema } from "./testimonials.schema";
+import {
+    listTestimonialsQuerySchema,
+    getTestimonioByIdParamsSchema,
+    updateStatusParamsSchema,
+} from "./testimonials.schema";
+import {
+    testimonialIdParamSchema,
+    updateTestimonialSchema,
+    updateTestimonialStatusSchema,
+} from "./testimonials.schema";
 import { sendSuccess, sendError } from "../../shared/utils/api-response";
-
 
 const service = new TestimonialService();
 
 export class TestimonialController {
     async list(req: Request, res: Response, next: NextFunction) {
         try {
-            const parsed = listTestimoniosQuerySchema.safeParse(req.query);
+            const parsed = listTestimonialsQuerySchema.safeParse(req.query);
 
             if (!parsed.success) {
                 return sendError(
@@ -24,16 +32,12 @@ export class TestimonialController {
 
             const result = await service.list(parsed.data);
 
-            return sendSuccess(
-                res,
-                result.items,
-                {
-                    total: result.total,
-                    page: result.page,
-                    limit: result.limit,
-                    totalPages: result.totalPages,
-                }
-            );
+            return sendSuccess(res, result.items, {
+                total: result.total,
+                page: result.page,
+                limit: result.limit,
+                totalPages: result.totalPages,
+            });
         } catch (error) {
             next(error);
         }
@@ -59,8 +63,8 @@ export class TestimonialController {
                 return sendError(
                     res,
                     404,
-                    "TESTIMONIO_NOT_FOUND",
-                    "Testimonio no encontrado"
+                    "TESTIMONIAL_NOT_FOUND",
+                    "Testimonial not found"
                 );
             }
 
@@ -70,20 +74,20 @@ export class TestimonialController {
         }
     }
 
-    async updateEstado(req: Request, res: Response, next: NextFunction) {
+    async updateStatus(req: Request, res: Response, next: NextFunction) {
         try {
             const paramsParsed = updateStatusParamsSchema.safeParse(req.params);
-            const bodyParsed = updateStatusBodySchema.safeParse(req.body);
+            const bodyParsed = updateTestimonialStatusSchema.safeParse(req.body);
 
             if (!paramsParsed.success || !bodyParsed.success) {
                 return sendError(
                     res,
                     400,
                     "VALIDATION_ERROR",
-                    "Datos inválidos",
+                    "Invalid data",
                     {
-                        params: paramsParsed.error?.flatten(),
-                        body: bodyParsed.error?.flatten(),
+                        params: paramsParsed.success ? undefined : paramsParsed.error.flatten(),
+                        body: bodyParsed.success ? undefined : bodyParsed.error.flatten(),
                     }
                 );
             }
@@ -94,9 +98,9 @@ export class TestimonialController {
             );
 
             return sendSuccess(res, updated, undefined, 200);
-        } catch (error: any) {
+        } catch (error) {
             if (error instanceof AppError) {
-                return sendError(res, error.statusCode, error.code, error.message);
+                return sendError(res, error.statusCode, error.code, error.message, error.details);
             }
             next(error);
         }
@@ -104,55 +108,53 @@ export class TestimonialController {
 
     async update(req: Request, res: Response, next: NextFunction) {
         try {
-            const paramsParsed = updateTestimonialParamsSchema.safeParse(req.params);
+            const paramsParsed = testimonialIdParamSchema.safeParse(req.params);
+            const bodyParsed = updateTestimonialSchema.safeParse(req.body);
 
             if (!paramsParsed.success) {
                 return sendError(
                     res,
                     400,
                     "VALIDATION_ERROR",
-                    "Parámetros inválidos",
+                    "Invalid testimonial id",
                     paramsParsed.error.flatten()
                 );
             }
-
-            const bodyParsed = updateTestimonialBodySchema.safeParse(req.body);
 
             if (!bodyParsed.success) {
                 return sendError(
                     res,
                     400,
                     "VALIDATION_ERROR",
-                    "Body inválido",
+                    "Invalid testimonial data",
                     bodyParsed.error.flatten()
                 );
             }
 
-            const { id } = paramsParsed.data;
-            const payload = bodyParsed.data;
+            const updated = await service.update(
+                paramsParsed.data.id,
+                bodyParsed.data
+            );
 
-            const updated = await service.update(id, payload);
-
-            return sendSuccess(res, updated);
+            return sendSuccess(res, updated, undefined, 200);
         } catch (error) {
             if (error instanceof AppError) {
                 return sendError(res, error.statusCode, error.code, error.message, error.details);
             }
-
             next(error);
         }
     }
 
-    async remove(req: Request, res: Response, next: NextFunction) {
+    async delete(req: Request, res: Response, next: NextFunction) {
         try {
-            const paramsParsed = testimonioIdParamsSchema.safeParse(req.params);
+            const paramsParsed = testimonialIdParamSchema.safeParse(req.params);
 
             if (!paramsParsed.success) {
                 return sendError(
                     res,
                     400,
                     "VALIDATION_ERROR",
-                    "Parámetros inválidos",
+                    "Invalid testimonial id",
                     paramsParsed.error.flatten()
                 );
             }
@@ -162,17 +164,9 @@ export class TestimonialController {
             return res.status(204).send();
         } catch (error) {
             if (error instanceof AppError) {
-                return sendError(
-                    res,
-                    error.statusCode,
-                    error.code,
-                    error.message,
-                    error.details
-                );
+                return sendError(res, error.statusCode, error.code, error.message, error.details);
             }
-
             next(error);
         }
     }
-
 }
