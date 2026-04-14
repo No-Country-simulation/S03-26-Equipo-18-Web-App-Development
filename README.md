@@ -436,3 +436,59 @@ Si la documentación no carga, verifica que:
 - El backend esté ejecutándose correctamente.
 - El archivo de configuración de Swagger esté incluido en el proyecto.
 - Los schemas y rutas documentadas estén bien definidos.
+
+# CRUD de Tags
+
+## Objetivo
+Implementar el CRUD privado de tags para la gestión de etiquetas asociadas a testimonios.
+
+## Alcance
+Se deben crear los siguientes endpoints:
+
+- `GET /api/private/tags`
+- `GET /api/private/tags/:id`
+- `POST /api/private/tags`
+- `PUT /api/private/tags/:id`
+- `DELETE /api/private/tags/:id`
+
+## Reglas de negocio
+- El campo `name` debe ser único.
+- El campo `slug` debe ser único.
+- El `slug` debe estar en minúsculas y usar guiones.
+- No se debe permitir eliminar un tag si está asociado a uno o más testimonios.
+- Los endpoints deben ser privados y protegidos por autenticación.
+- La validación debe hacerse con Zod.
+- La persistencia debe hacerse con Prisma.
+
+## Payload esperado
+
+### Crear tag
+```json
+{
+  "name": "Productivity",
+  "slug": "productivity"
+}
+```
+
+### Actualizar tag
+```json
+{
+  "name": "Customer Success",
+  "slug": "customer-success"
+}
+```
+
+## Criterios de aceptación
+- Se puede crear un tag nuevo.
+- Se puede listar tags con paginación y búsqueda.
+- Se puede consultar un tag por id.
+- Se puede actualizar `name` y/o `slug`.
+- Se impide crear o actualizar tags duplicados.
+- Se impide eliminar tags asociados a testimonios.
+- Los errores se devuelven con formato estándar de la API.
+- La documentación Swagger queda disponible para estos endpoints.
+
+## Consideraciones técnicas
+- Modelo Prisma usado: `Tag`
+- Relación a validar antes de eliminar: `TestimonialTag`
+- Campos disponibles en `Tag`: `id`, `name`, `slug`, `createdAt`
