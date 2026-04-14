@@ -1,60 +1,79 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import TituloPage from "@/components/tituloPage";
 import TestimonialsClient from "@/components/TestimonialsClient";
 import SearchInput from "@/components/ui/SearchInput";
 import { StatusFilters } from "@/components/ui/StatusFilter";
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-const Testimonials = async ({
-  searchParams,
-}: {
-  searchParams: Promise<{ query?: string; status?: string }>;
-}) => {
-  // Usamos nuestro hook propio
+const Testimonials = () => {
   const { user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  if (!user) {
-    router.push("/login"); // redirige si no hay usuario logueado
-    return null;
-  }
-  const masterAdminId = user.id;
+  const [testimonials, setTestimonials] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [allTags, setAllTags] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // const masterAdminId = user.adminId || user.id;
+  const query = searchParams.get("query") || "";
+  const status = searchParams.get("status") || "";
 
-  const params = await searchParams;
-  const query = params?.query || "";
-  const status = params?.status || "";
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
 
-  // Construimos queryParams para la API
-  const queryParams = new URLSearchParams({
-    adminId: masterAdminId,
-    ...(query && { query }),
-    ...(status && { status }),
-  }).toString();
+    const fetchData = async () => {
+      try {
+        const queryParams = new URLSearchParams({
+          adminId: user.id,
+          ...(query && { query }),
+          ...(status && { status }),
+        }).toString();
 
-  let testimonials = [];
-  let categories = [];
-  let allTags = [];
+        const [resTestimonials, resCategories, resTags] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/testimonials?${queryParams}`),
+          fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/categories`),
+          fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tags`),
+        ]);
 
-  try {
-    const [resTestimonials, resCategories, resTags] = await Promise.all([
-      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/testimonials?${queryParams}`, { next: { revalidate: 0 } }),
-      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/categories`, { next: { revalidate: 3600 } }),
-      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tags`, { next: { revalidate: 3600 } }),
-    ]);
+        if (resTestimonials.ok) {
+          const data = await resTestimonials.json();
+          setTestimonials(data);
+        }
 
-    if (resTestimonials.ok) testimonials = await resTestimonials.json();
-    if (resCategories.ok) categories = await resCategories.json();
-    if (resTags.ok) allTags = await resTags.json();
-  } catch (error) {
-    console.error("Error cargando datos de testimonios:", error);
+        if (resCategories.ok) {
+          const data = await resCategories.json();
+          setCategories(data);
+        }
+
+        if (resTags.ok) {
+          const data = await resTags.json();
+          setAllTags(data);
+        }
+      } catch (error) {
+        console.error("Error cargando datos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user, query, status]);
+
+  // 🔥 loading + auth control
+  if (!user || loading) {
+    return <div className="p-8">Cargando...</div>;
   }
 
   return (
     <div>
-      <TituloPage 
-        titulo="Gestor de Testimonios" 
+      <TituloPage
+        titulo="Gestor de Testimonios"
         descripcion={
           query
             ? `Gestione y edite los resultados para "${query}": ${testimonials.length}`
