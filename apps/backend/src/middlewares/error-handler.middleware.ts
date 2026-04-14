@@ -1,6 +1,8 @@
+// src/middlewares/error-handler.middleware.ts
 import { NextFunction, Request, Response } from 'express';
 import z, { ZodError } from 'zod';
 import { AppError } from '../shared/utils/AppError';
+import { de } from 'zod/locales';
 
 export function errorHandler(
   error: unknown,
@@ -8,6 +10,8 @@ export function errorHandler(
   res: Response,
   _next: NextFunction
 ) {
+  console.error('❌ Error capturado por errorHandler:', error);
+
   if (error instanceof AppError) {
     return res.status(error.statusCode).json({
       success: false,
