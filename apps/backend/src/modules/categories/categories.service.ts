@@ -133,6 +133,7 @@ export async function createCategory(data: CreateCategoryInput) {
       name: true,
       slug: true,
       description: true,
+      isSystem: true,
       createdAt: true,
       updatedAt: true,
       _count: {
@@ -197,7 +198,9 @@ export async function updateCategory(id: string, data: UpdateCategoryInput) {
       name: true,
       slug: true,
       description: true,
+      isSystem: true,
       createdAt: true,
+      updatedAt: true,
       _count: {
         select: {
           testimonials: true,
