@@ -17,5 +17,17 @@ export const testimonialIdParamSchema = z.object({
     id: z.string().trim().min(1, "El id es obligatorio"),
 });
 
+export const listPublishedTestimonialsQuerySchema = z.object({
+    page: z.coerce.number().int().positive().default(1),
+    limit: z.coerce.number().int().positive().max(50).default(10),
+    categoryId: z.string().trim().optional(),
+    type: z.enum(["TEXT", "IMAGE", "VIDEO"]).optional(),
+    featured: z.coerce.boolean().optional(),
+    q: z.string().trim().optional(),
+    sortBy: z.enum(["publishedAt", "createdAt", "views", "clicks"]).default("publishedAt"),
+    sortOrder: z.enum(["asc", "desc"]).default("desc"),
+});
+
 export type CreatePublicTestimonioInput = z.infer<typeof createPublicTestimonioSchema>;
 export type TestimonialIdParamInput = z.infer<typeof testimonialIdParamSchema>;
+export type ListPublishedTestimonialsQuery = z.infer<typeof listPublishedTestimonialsQuerySchema>;

@@ -492,3 +492,63 @@ Se deben crear los siguientes endpoints:
 - Modelo Prisma usado: `Tag`
 - Relación a validar antes de eliminar: `TestimonialTag`
 - Campos disponibles en `Tag`: `id`, `name`, `slug`, `createdAt`
+
+# Endpoint público para listar testimonios publicados
+
+## Objetivo
+Crear un endpoint público que retorne de forma paginada únicamente los testimonios con estado `PUBLISHED`.
+
+## Endpoint
+`GET /api/public/testimonials`
+
+## Alcance
+El endpoint debe:
+
+- Ser público, sin autenticación.
+- Retornar únicamente testimonios con estado `PUBLISHED`.
+- Soportar paginación con `page` y `limit`.
+- Permitir filtros opcionales por:
+  - `categoryId`
+  - `type`
+  - `featured`
+  - `q`
+- Permitir ordenamiento por:
+  - `publishedAt`
+  - `createdAt`
+  - `views`
+  - `clicks`
+- Retornar únicamente campos públicos del testimonio.
+
+## Campos públicos esperados en la respuesta
+- `id`
+- `title`
+- `content`
+- `authorName`
+- `authorPosition`
+- `authorCompany`
+- `type`
+- `imageUrl`
+- `videoUrl`
+- `youtubeId`
+- `views`
+- `clicks`
+- `isFeatured`
+- `publishedAt`
+- `createdAt`
+- `category`
+- `testimonialTags`
+
+## No debe incluir
+- `authorEmail`
+- `rejectionReason`
+- `createdById`
+- `adminId`
+- cualquier dato interno de administración
+
+## Criterios de aceptación
+- El endpoint responde correctamente con status `200`.
+- Solo se devuelven testimonios `PUBLISHED`.
+- La respuesta está paginada.
+- Los filtros funcionan correctamente.
+- El endpoint queda documentado en Swagger.
+- El README incluye una breve descripción del endpoint.

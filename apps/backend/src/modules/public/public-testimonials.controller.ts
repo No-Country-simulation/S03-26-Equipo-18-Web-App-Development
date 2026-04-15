@@ -1,11 +1,13 @@
 import type { NextFunction, Request, Response } from "express";
 import { PublicTestimonialsService } from "./public-testimonials.service";
+import { sendError, sendSuccess } from "../../shared/utils/api-response";
 import {
     createPublicTestimonioSchema,
     testimonialIdParamSchema,
 } from "./public-testimonials.schema";
 import { AppError } from "../../shared/utils/AppError";
 import z from "zod";
+import { listPublishedTestimonialsQuerySchema } from "./public-testimonials.schema";
 
 const service = new PublicTestimonialsService();
 
@@ -96,6 +98,37 @@ export class PublicTestimonialsController {
             });
         } catch (error) {
             return next(error);
+        }
+    }
+
+    async listPublished(req: Request, res: Response, next: NextFunction) {
+        try {
+            const parsed = listPublishedTestimonialsQuerySchema.safeParse(req.query);
+
+            if (!parsed.success) {
+                return sendError(
+                    res,
+                    400,
+                    "VALIDATION_ERROR",
+                    "Invalid query parameters",
+                    parsed.error.flatten()
+                );
+            }
+
+            const result = await service.listPublished(parsed.data);
+
+            return sendSuccess(res, result.items, {
+                total: result.total,
+                page: result.page,
+                limit: result.limit,
+                totalPages: result.totalPages,
+            });
+        } catch (error) {
+            if (error instanceof AppError) {
+                return sendError(res, error.statusCode, error.code, error.message, error.details);
+            }
+
+            next(error);
         }
     }
 }
