@@ -25,4 +25,6 @@ publicTestimonialsRouter.post(
     controller.incrementClicks.bind(controller)
 );
 
+publicTestimonialsRouter.get("/published", (req, res, next) => controller.listPublished(req, res, next));
+
 export default publicTestimonialsRouter;

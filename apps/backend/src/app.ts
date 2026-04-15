@@ -11,6 +11,8 @@ import testimoniosRouter from "./modules/testimonial/testimonial.router";
 import publicTestimoniosRouter from "./modules/public/public-testimonials.router";
 import categoriesRouter from "./modules/categories/categories.routes";
 
+import tagRouter from "./modules/tag/tag.router";
+
 
 const app = express();
 
@@ -49,6 +51,7 @@ app.use("/auth", authRouter);
 app.use("/api/private/testimonials", testimoniosRouter);
 app.use("/api/public/testimonials", publicTestimoniosRouter);
 app.use('/api/private/categories', categoriesRouter);
+app.use("/api/private/tags", tagRouter);
 
 app.use(errorHandler);
 
