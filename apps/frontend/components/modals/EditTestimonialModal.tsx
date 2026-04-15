@@ -5,6 +5,8 @@ import { updateTestimonial } from "@/services/testimonials.service";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+
 
 
 interface Tag {
@@ -25,10 +27,11 @@ interface Testimonial {
   location: string | null;
   videoUrl?: string;
   videoProvider?: string;
-  status: "PENDIENTE" | "APROBADO" | "RECHAZADO";
-  categoryId: string;
+  status: "PENDING" | "PUBLISHED" | "REJECTED" | "DRAFT" | "IN_REVIEW";
+  categoryId?: string;
   userId: string;
   tags: { id: string; name: string }[];
+  //verificar si faltan datos como authorCompany, etc.
 }
 
 interface TestimonialFormValues {
@@ -50,6 +53,7 @@ interface EditTestimonialModalProps {
 
 const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTags }: EditTestimonialModalProps) => {
   
+    const { user } = useAuth();
     const router = useRouter();
     
 
@@ -69,7 +73,7 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
             reset({
             status: testimonial.status,
             categoryId: testimonial.categoryId,
-            tagIds: testimonial.tags?.map((t: any) => t.id) || [],
+            tagIds: testimonial.tags?.map((t: { id: string }) => t.id) || [],
             newTagsRaw: "",
             });
     }
@@ -81,15 +85,27 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
     const onSubmit = async (data: TestimonialFormValues) => {
         const loadingToast = toast.loading("Actualizando testimonio...");
 
-        const result = await updateTestimonial(testimonial.id, data);
+        // const newTagsArray = data.newTagsRaw
+        // ? data.newTagsRaw.split(",").map(tag => tag.trim()).filter(tag => tag !== "")
+        // : [];
+
+        // 💡 TRADUCCIÓN INVERSA: Preparamos el payload para el Backend
+        const backendPayload = {
+            status: data.status, 
+            categoryId: data.categoryId,
+            adminId: user?.id,
+            tagIds: data.tagIds, 
+            //newTags: newTagsRaw
+        };
+
+        const result = await updateTestimonial(testimonial.id, backendPayload);
 
         if (result.success) {
             toast.success("¡Testimonio actualizado!", { id: loadingToast });
             onClose();
-            router.refresh();
+            router.refresh(); // Esto recargará los datos de la página automáticamente
         } else {
             toast.error(result.error, { id: loadingToast });
-            console.error("Error al actualizar:", result.error);
         }
     };
 
@@ -121,9 +137,11 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
                     {...register("status")}
                     className="w-full p-4 bg-txtSecondary rounded-2xl border-none focus:ring-2 focus:ring-primary outline-none text-sm font-semibold"
                     >
-                    <option value="PENDIENTE">🕒 Pendiente de Revisión</option>
-                    <option value="APROBADO">✅ Aprobado para Publicar</option>
-                    <option value="RECHAZADO">❌ Rechazado</option>
+                    <option value="PENDING">🕒 Pendiente de Revisión</option>
+                    <option value="PUBLISHED">✅ Aprobado para Publicar</option>
+                    <option value="REJECTED">❌ Rechazado</option>
+                    <option value="DRAFT">📝 Borrador</option>
+                    <option value="IN_REVIEW">🕒 En Revisión</option>
                     </select>
                 </div>
 

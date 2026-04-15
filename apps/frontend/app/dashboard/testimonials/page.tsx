@@ -1,19 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getAllTestimonials, getCategories, getTags } from "@/services/testimonials.service";
+import { TestimonialCardProps } from "@/types";
+
 import TituloPage from "@/components/tituloPage";
 import TestimonialsClient from "@/components/TestimonialsClient";
 import SearchInput from "@/components/ui/SearchInput";
 import { StatusFilters } from "@/components/ui/StatusFilter";
-import { useAuth } from "@/hooks/useAuth";
-import { useRouter, useSearchParams } from "next/navigation";
+
 
 const Testimonials = () => {
   const { user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [testimonials, setTestimonials] = useState([]);
+  const [testimonials, setTestimonials] = useState<TestimonialCardProps[]>([]);
   const [categories, setCategories] = useState([]);
   const [allTags, setAllTags] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,45 +31,31 @@ const Testimonials = () => {
       return;
     }
 
-    const fetchData = async () => {
-      try {
-        const queryParams = new URLSearchParams({
-          adminId: user.id,
-          ...(query && { query }),
-          ...(status && { status }),
-        }).toString();
+    const loadPageData = async () => {
+          setLoading(true);
+          try {
+            // Ahora usamos nuestros servicios de Axios
+            const [resT, resC, resTags] = await Promise.all([
+              getAllTestimonials({ query, status }),
+              getCategories(),
+              getTags(),
+            ]);
 
-        const [resTestimonials, resCategories, resTags] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/testimonials?${queryParams}`),
-          fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/categories`),
-          fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tags`),
-        ]);
+            if (resT.success) setTestimonials(resT.data);
+            setCategories(resC);
+            setAllTags(resTags);
 
-        if (resTestimonials.ok) {
-          const data = await resTestimonials.json();
-          setTestimonials(data);
-        }
+          } catch (error) {
+            console.error("Error en la carga masiva:", error);
+          } finally {
+            setLoading(false);
+          }
+        };
 
-        if (resCategories.ok) {
-          const data = await resCategories.json();
-          setCategories(data);
-        }
-
-        if (resTags.ok) {
-          const data = await resTags.json();
-          setAllTags(data);
-        }
-      } catch (error) {
-        console.error("Error cargando datos:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+        loadPageData();
   }, [user, query, status]);
 
-  // 🔥 loading + auth control
+ 
   if (!user || loading) {
     return <div className="p-8">Cargando...</div>;
   }

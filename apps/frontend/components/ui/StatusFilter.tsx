@@ -3,10 +3,12 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 const statuses = [
-  { label: "Todos", value: "" },
-  { label: "Pendientes", value: "PENDIENTE" },
-  { label: "Aprobados", value: "APROBADO" },
-  { label: "Rechazados", value: "RECHAZADO" },
+{ label: "Todos", value: "" },
+  { label: "Pendientes", value: "PENDING" },    
+  { label: "Publicados", value: "PUBLISHED" }, 
+  { label: "Rechazados", value: "REJECTED" },
+  { label: "Borradores", value: "DRAFT" },
+  { label: "En Revisión", value: "IN_REVIEW" },
 ];
 
 export const StatusFilters = () => {

@@ -1,34 +1,35 @@
 import { MdLocationOn, MdStar, MdLabel, MdCategory } from "react-icons/md";
-
-interface Tag {
-  id: string;  
-  name: string;
-}
-
-interface TestimonialCardProps {
-  userName: string;
-  content: string;
-  rating: number;
-  location?: string | null;
-  category: string;
-  status: string;
-  tags: Tag[];
-}
+import { TestimonialCardProps } from "@/types"; // Importas la interfaz
 
 
-const getStatusClass = (status: string) => {
-  switch (status) {
-    case "APROBADO":
-      return "badge-approved";
-    case "RECHAZADO":
-      return "badge-rejected";
-    default:
-      return "badge-pending";
-  }
-};
+
+export default function TestimonialCard({ 
+  userName, 
+  content, 
+  rating, 
+  location, 
+  category, 
+  status, 
+  tags 
+}: TestimonialCardProps) {
 
 
-const TestimonialCard = ({ userName, content, rating, location, category, status, tags }: TestimonialCardProps) => {
+  const getStatusClass = (status: string) => {
+    switch (status) {
+      case "PUBLISHED":
+        return "badge-approved";
+      case "REJECTED":
+        return "badge-rejected";
+      case "DRAFT":
+      case "IN_REVIEW":
+        return "badge-in-review"; 
+      default:
+        return "badge-pending";
+    }
+  };
+
+
+
   return (
     <div className="bg-chalk rounded-3xl p-6 shadow-sm  border border-primary flex flex-col h-full hover:shadow-lg transition-all duration-300">
       
@@ -49,7 +50,7 @@ const TestimonialCard = ({ userName, content, rating, location, category, status
 
         {/* Badge de Estado usando las clases de globals.css */}
         <div className={`${getStatusClass(status)} px-4 py-1 rounded-full text-[10px] font-black shadow-sm transform rotate-3 uppercase tracking-wider`}>
-          {status === 'APPROVED' ? 'Aprobado' : status}
+          {status === 'PUBLISHED' ? 'PUBLICADO' : status}
         </div>
       </div>
 
@@ -90,14 +91,14 @@ const TestimonialCard = ({ userName, content, rating, location, category, status
 
           {/* Ubicación */}
           <div className="flex items-center gap-1 text-dark/50 text-[11px] font-bold">
-            <MdLocationOn className="text-brand" size={14} />
+            <MdLocationOn className="text-primary" size={14} />
             {location || "Sin ubicación"}
           </div>
         </div>
       </div>
       
     </div>
-  )
+  );
 }
 
-export default TestimonialCard
+

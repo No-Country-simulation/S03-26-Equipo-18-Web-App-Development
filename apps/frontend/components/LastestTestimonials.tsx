@@ -1,4 +1,4 @@
-import TestimonialCard from "@/components/TestimonialCard"
+import  TestimonialCard  from "@/components/TestimonialCard"
 import Link from "next/link"
 
 interface Tag {
@@ -37,17 +37,17 @@ const LastestTestimonials = ({ testimonials }: LastestTestimonialsProps) => {
       {/* Grid que muestra los últimos testimonios */}
       <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
         {testimonials.length > 0 ? (
-          testimonials.map((t) => (
+          testimonials.slice(0,4).map((t) => (
             <div key={t.id} className="h-full">
               <TestimonialCard 
+                id={t.id} 
                 userName={t.userName}
                 content={t.content}
-                rating={t.rating}
+                rating={t.rating || 5}
                 location={t.location}
-                category={t.category?.name || "Sin categoria"}
+                category={t.category?.name || "Sin categoría"}
                 status={t.status}
-                tags={t.tags}
-              />
+                tags={t.tags || []}              />
             </div>
           ))
         ) : (

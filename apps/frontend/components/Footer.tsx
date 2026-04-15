@@ -11,7 +11,7 @@ export default function DashboardFooter() {
         <div className="flex items-center gap-3">
           <div className="relative w-6 h-6 opacity-30 brightness-200 grayscale">
             <Image 
-              src="/img/logo.png" 
+              src="/image/logo/logoside.png" 
               alt="NoStories Logo" 
               fill 
               className="object-contain"
