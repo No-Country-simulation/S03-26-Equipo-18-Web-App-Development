@@ -1,8 +1,10 @@
+import { Prisma, TestimonialStatus, TestimonialType } from "@prisma/client";
 import { prisma } from "../../config/prisma";
 import cloudinary from "../../config/cloudinary";
 import { AppError } from "../../shared/utils/AppError";
 import { extractYoutubeId } from "../../shared/utils/youtube";
 import type { CreatePublicTestimonioInput } from "./public-testimonials.schema";
+import type { ListPublishedTestimonialsQuery } from "./public-testimonials.schema";
 
 function bufferToBase64(file: Express.Multer.File) {
     return `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
@@ -149,5 +151,100 @@ export class PublicTestimonialsService {
         } catch {
             throw new AppError(404, "TESTIMONIAL_NOT_FOUND", "Testimonio no encontrado");
         }
+    }
+
+    async listPublished(query: ListPublishedTestimonialsQuery) {
+        const {
+            page,
+            limit,
+            categoryId,
+            type,
+            featured,
+            q,
+            sortBy,
+            sortOrder,
+        } = query;
+
+        const skip = (page - 1) * limit;
+
+        const where: Prisma.TestimonialWhereInput = {
+            status: TestimonialStatus.PUBLISHED,
+        };
+
+        if (categoryId) {
+            where.categoryId = categoryId;
+        }
+
+        if (type) {
+            where.type = type as TestimonialType;
+        }
+
+        if (featured !== undefined) {
+            where.isFeatured = featured;
+        }
+
+        if (q) {
+            where.OR = [
+                { title: { contains: q, mode: "insensitive" } },
+                { content: { contains: q, mode: "insensitive" } },
+                { authorName: { contains: q, mode: "insensitive" } },
+                { authorCompany: { contains: q, mode: "insensitive" } },
+            ];
+        }
+
+        const [total, items] = await Promise.all([
+            prisma.testimonial.count({ where }),
+            prisma.testimonial.findMany({
+                where,
+                skip,
+                take: limit,
+                orderBy: {
+                    [sortBy]: sortOrder,
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    content: true,
+                    authorName: true,
+                    authorPosition: true,
+                    authorCompany: true,
+                    type: true,
+                    imageUrl: true,
+                    videoUrl: true,
+                    youtubeId: true,
+                    views: true,
+                    clicks: true,
+                    isFeatured: true,
+                    publishedAt: true,
+                    createdAt: true,
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        },
+                    },
+                    testimonialTags: {
+                        select: {
+                            tag: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    slug: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            }),
+        ]);
+
+        return {
+            items,
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        };
     }
 }
