@@ -10,6 +10,7 @@ import { errorHandler } from "./middlewares/error-handler.middleware";
 import testimoniosRouter from "./modules/testimonial/testimonial.router";
 import publicTestimoniosRouter from "./modules/public/public-testimonials.router";
 import categoriesRouter from "./modules/categories/categories.routes";
+import usersRouter from "./modules/users/users.routes";
 
 import tagRouter from "./modules/tag/tag.router";
 
@@ -48,6 +49,7 @@ app.use(
 
 
 app.use("/auth", authRouter);
+app.use("/users", usersRouter);
 app.use("/api/private/testimonials", testimoniosRouter);
 app.use("/api/public/testimonials", publicTestimoniosRouter);
 app.use('/api/private/categories', categoriesRouter);

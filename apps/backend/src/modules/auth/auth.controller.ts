@@ -5,7 +5,7 @@ import { AppError } from "../../shared/utils/AppError";
 import z from "zod";
 import { AppJwtPayload } from "../../shared/utils/jwt";
 
-type AuthenticatedRequest = Request & {
+export type AuthenticatedRequest = Request & {
   user?: AppJwtPayload;
 };
 
