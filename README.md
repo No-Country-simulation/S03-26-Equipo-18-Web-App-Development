@@ -552,3 +552,122 @@ El endpoint debe:
 - Los filtros funcionan correctamente.
 - El endpoint queda documentado en Swagger.
 - El README incluye una breve descripción del endpoint.
+
+# Semilla de Base de Datos - Testimonios y Datos Base
+
+## Objetivo
+Implementar una semilla de base de datos que genere datos de prueba realistas para desarrollo y pruebas, incluyendo admin, categorías, tags y múltiples testimonios con relaciones completas.
+
+## Alcance
+**Admin inicial** + **4 categorías base** + **10 tags base** + **12 testimonios variados** con relaciones `TestimonialTag`, `createdById`, `adminId` y `categoryId`.
+
+## Datos sembrados
+
+### Admin inicial
+- Email: admin@testimonialcms.local
+- Password: Admin123*
+- API Key: admin-api-key-inicial
+
+
+### Categorías base
+| Nombre | Slug | Descripción |
+|--------|------|-------------|
+| Producto | `producto` | Testimonios relacionados con productos |
+| Evento | `evento` | Testimonios relacionados con eventos |
+| Cliente | `cliente` | Testimonios relacionados con clientes |
+| Industria | `industria` | Testimonios relacionados con industrias |
+
+### Tags base
+| Nombre | Slug |
+|--------|------|
+| Innovación | `innovacion` |
+| Calidad | `calidad` |
+| Soporte | `soporte` |
+| Experiencia | `experiencia` |
+| Resultados | `resultados` |
+| Confianza | `confianza` |
+| Transformación | `transformacion` |
+| Productividad | `productividad` |
+| Tecnología | `tecnologia` |
+| Servicio | `servicio` |
+
+### Testimonios (12 total)
+| Título | Categoría | Tags | Estado | Destacado | Views |
+|--------|-----------|------|--------|-----------|-------|
+| La plataforma nos ayudó a optimizar la operación | Producto | productividad, resultados, tecnología | **PUBLISHED** | ✅ | 128 |
+| El soporte fue rápido, claro y muy cercano | Cliente | soporte, servicio, confianza | **PUBLISHED** | ❌ | 96 |
+| El evento nos permitió conectar con clientes reales | Evento | experiencia, innovación, resultados | **PUBLISHED** | ✅ | 143 |
+| Una solución flexible para nuestra industria | Industria | transformación, tecnología, calidad | **PUBLISHED** | ❌ | 84 |
+| Mejoramos el seguimiento de cada oportunidad | Producto | productividad, calidad | **PUBLISHED** | ❌ | 77 |
+| Ahora tenemos más confianza en todo el proceso | Cliente | confianza, resultados, servicio | **PUBLISHED** | ✅ | 111 |
+| Una experiencia muy bien organizada | Evento | experiencia, servicio | **PUBLISHED** | ❌ | 69 |
+| El impacto en productividad fue evidente | Industria | productividad, transformación, resultados | **PUBLISHED** | ❌ | 91 |
+| Ahora tenemos una mejor visión del cliente | Producto | tecnología, calidad, experiencia | **PUBLISHED** | ❌ | 73 |
+| Un servicio que realmente genera confianza | Cliente | servicio, confianza, soporte | **PUBLISHED** | ✅ | 134 |
+| Identificamos oportunidades de mejora interna | Industria | calidad, transformación | **DRAFT** | ❌ | 12 |
+| Queremos compartir nuestra experiencia del evento | Evento | experiencia, innovación | **PENDING** | ❌ | 5 |
+
+## Características técnicas
+
+### Idempotencia
+- **Admin**: `upsert` por `email`
+- **Categorías/Tags**: `upsert` por `slug`
+- **Testimonios**: `upsert` por `title + authorEmail`
+- **Relaciones**: recrea `TestimonialTag` cada ejecución
+
+### Relaciones implementadas
+- Admin → createdById → Testimonial
+- Admin → adminId → Testimonial
+- Testimonial → categoryId → Category
+- Testimonial → testimonialTags → TestimonialTag → Tag
+
+
+## Ejecución
+```bash
+npx prisma db seed
+```
+
+## Verificación
+```bash
+# Endpoint público (9 testimonios PUBLISHED)
+curl "http://localhost:3000/api/public/testimonials/published?page=1&limit=10"
+
+# Endpoint privado (todos los 12)
+curl -H "Authorization: Bearer TOKEN" "http://localhost:3000/api/private/testimonials"
+```
+
+## Configuración (opcional)
+SEED_ADMIN_NAME="Mi Admin"
+SEED_ADMIN_EMAIL="admin@miempresa.com"
+SEED_ADMIN_PASSWORD="MiPass123*"
+SEED_ADMIN_API_KEY="mi-api-key-seed"
+
+
+## Criterios de aceptación
+✅ Admin creado/actualizado  
+✅ 4 categorías base disponibles  
+✅ 10 tags base disponibles  
+✅ 12 testimonios en español  
+✅ **9 PUBLISHED** visibles públicamente  
+✅ Relaciones `TestimonialTag` funcionando  
+✅ Semilla **idempotente** (ejecutable múltiples veces)  
+✅ Logs informativos en consola  
+
+## Notas
+- Contenido realista y variado por categoría
+- `views`/`clicks` simulados
+- `publishedAt` solo para `PUBLISHED`
+- Algunos testimonios `isFeatured: true`
+
+## 🛠️ Configuración de la Base de Datos (Prisma + Docker)
+
+Una vez que los contenedores estén corriendo (`docker-compose up -d`), debes sincronizar el esquema de la base de datos y cargar los datos iniciales (seed).
+
+### 1. Sincronizar el esquema
+Este comando crea las tablas en la base de datos de Postgres basándose en el archivo `schema.prisma`. 
+> **Nota:** Se debe ejecutar cada vez que modifiques el modelo de datos.
+
+```bash
+docker exec -it testimonial-api npx prisma db push
+docker exec -it testimonial-api npx prisma db seed 
+ ```
