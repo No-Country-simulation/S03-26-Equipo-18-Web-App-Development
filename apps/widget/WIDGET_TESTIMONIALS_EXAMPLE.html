@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testimonios Widget - Ejemplo de Uso</title>
+    <style>
+        body {
+            font-family: Inter, system-ui, sans-serif;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #111827;
+            margin-bottom: 10px;
+        }
+
+        .info {
+            color: #6b7280;
+            margin-bottom: 30px;
+            padding: 16px;
+            background: #f3f4f6;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+
+        .code-block {
+            background: #1f2937;
+            color: #d1d5db;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .section {
+            margin: 40px 0;
+        }
+
+        .widget-container {
+            border: 2px dashed #d1d5db;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f9fafb;
+            min-height: 400px;
+        }
+
+        #testimonials-widget {
+            min-height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Widget de Testimonios</h1>
+        <p class="info">
+            Ejemplo de implementación del widget de testimonios en un sitio externo
+        </p>
+
+        <div class="section">
+            <h2>1️⃣ Pasos de Implementación</h2>
+
+            <h3>Paso 1: Agregar referencias</h3>
+            <p>Copia este código en tu HTML donde quieras mostrar los testimonios:</p>
+            <div class="code-block">
+&lt;div id="testimonials-widget"&gt;&lt;/div&gt;
+
+&lt;script src="http://localhost:3001/widget/testimonials.js"&gt;&lt;/script&gt;
+            </div>
+
+            <h3>Paso 2: Inicializar el widget</h3>
+            <p>Luego, inicializa el widget con tu configuración:</p>
+            <div class="code-block">
+&lt;script&gt;
+  TestimonialsWidget.init({
+    containerId: 'testimonials-widget',
+    apiUrl: 'http://localhost:3000',        // URL de tu backend
+    widgetUrl: 'http://localhost:3001',     // URL del servicio widget
+    theme: 'light',                          // 'light' o 'dark'
+    limit: '6',                              // Límite de testimonios (defecto)
+    featured: false                          // Mostrar solo destacados
+  });
+&lt;/script&gt;
+            </div>
+
+            <h3>Paso 3: ¡Listo!</h3>
+            <p>El widget se mostrará automáticamente en el contenedor con ID <code>#testimonials-widget</code></p>
+        </div>
+
+        <div class="section">
+            <h2>⚙️ Opciones de Configuración</h2>
+            <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                <tr style="background: #f3f4f6;">
+                    <th style="text-align: left;">Opción</th>
+                    <th style="text-align: left;">Tipo</th>
+                    <th style="text-align: left;">Descripción</th>
+                </tr>
+                <tr>
+                    <td><code>containerId</code></td>
+                    <td>string</td>
+                    <td>ID del elemento HTML donde se incrustará el widget (REQUERIDO)</td>
+                </tr>
+                <tr>
+                    <td><code>apiUrl</code></td>
+                    <td>string</td>
+                    <td>URL de tu API backend (ej: https://api.tudominio.com)</td>
+                </tr>
+                <tr>
+                    <td><code>widgetUrl</code></td>
+                    <td>string</td>
+                    <td>URL del servicio widget (ej: https://widgets.tudominio.com)</td>
+                </tr>
+                <tr>
+                    <td><code>theme</code></td>
+                    <td>string</td>
+                    <td>'light' (defecto) o 'dark' - color del tema</td>
+                </tr>
+                <tr>
+                    <td><code>limit</code></td>
+                    <td>string</td>
+                    <td>Número de testimonios a mostrar por defecto (máx 50)</td>
+                </tr>
+                <tr>
+                    <td><code>featured</code></td>
+                    <td>boolean</td>
+                    <td>Si es true, muestra solo testimonios destacados</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>📊 Funcionalidades Incluidas</h2>
+            <ul>
+                <li>✅ Testimonios ordenados por destacados (isFeatured)</li>
+                <li>✅ Muestra el contenido completo del testimonio</li>
+                <li>✅ Registra automáticamente cada click en un testimonio</li>
+                <li>✅ Registra automáticamente las vistas</li>
+                <li>✅ Soporte para múltiples tipos: texto, imagen, video (YouTube)</li>
+                <li>✅ Tema claro/oscuro personalizable</li>
+                <li>✅ Botón "Ver todos" para mostrar más testimonios</li>
+                <li>✅ Auto-ajuste de altura del iframe</li>
+                <li>✅ Responsive - se adapta a cualquier tamaño de pantalla</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🎨 Vista Previa del Widget</h2>
+            <p>Aquí está el widget en acción:</p>
+
+            <div class="widget-container">
+                <div id="testimonials-widget"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💡 Ejemplos Adicionales</h2>
+
+            <h3>Tema Oscuro:</h3>
+            <div class="code-block">
+TestimonialsWidget.init({
+  containerId: 'my-testimonials',
+  apiUrl: 'https://api.midominio.com',
+  widgetUrl: 'https://widgets.midominio.com',
+  theme: 'dark'
+});
+            </div>
+
+            <h3>Con límite personalizado:</h3>
+            <div class="code-block">
+TestimonialsWidget.init({
+  containerId: 'testimonials',
+  apiUrl: 'https://api.midominio.com',
+  widgetUrl: 'https://widgets.midominio.com',
+  limit: '12'  // Mostrar 12 testimonios por defecto
+});
+            </div>
+
+            <h3>Solo testimonios destacados:</h3>
+            <div class="code-block">
+TestimonialsWidget.init({
+  containerId: 'featured-testimonials',
+  apiUrl: 'https://api.midominio.com',
+  widgetUrl: 'https://widgets.midominio.com',
+  featured: true
+});
+            </div>
+        </div>
+
+        <div class="section" style="background: #f0fdf4; padding: 20px; border-radius: 8px; border-left: 4px solid #22c55e;">
+            <h3 style="color: #16a34a; margin-top: 0;">✨ ¡Widget Listo!</h3>
+            <p style="color: #4b5563; margin: 0;">
+                El widget está completamente funcional. Los testimonios se cargan automáticamente desde tu API,
+                registra vistas y clicks, y se ajusta responsivamente a cualquier tamaño de pantalla.
+            </p>
+        </div>
+    </div>
+
+    <!-- IMPLEMENTACIÓN DEL WIDGET -->
+    <script src="http://localhost:3001/widget/testimonials.js"></script>
+    <script>
+        TestimonialsWidget.init({
+            containerId: "testimonials-widget",
+            apiUrl: "http://localhost:3000",
+            widgetUrl: "http://localhost:3001",
+            theme: "light",
+            limit: "6",
+        });
+    </script>
+</body>
+</html>
