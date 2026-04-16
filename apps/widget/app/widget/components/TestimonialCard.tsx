@@ -28,7 +28,6 @@ export default function TestimonialCard({
   authorPosition,
   authorCompany,
   content,
-  imageUrl,
   type,
   youtubeId,
   views,
@@ -92,46 +91,9 @@ export default function TestimonialCard({
     marginLeft: "8px",
   };
 
-  // Render media based on type
-  const renderMedia = () => {
-    if (type === "IMAGE" && imageUrl) {
-      return (
-        <img
-          src={imageUrl}
-          alt={authorName}
-          style={{
-            width: "100%",
-            height: "180px",
-            objectFit: "cover" as const,
-            borderRadius: "8px",
-            marginBottom: "12px",
-          }}
-        />
-      );
-    }
-
-    if (type === "VIDEO" && youtubeId) {
-      return (
-        <iframe
-          width="100%"
-          height="200"
-          src={`https://www.youtube.com/embed/${youtubeId}`}
-          style={{
-            borderRadius: "8px",
-            marginBottom: "12px",
-            border: "none",
-          }}
-          allowFullScreen
-        />
-      );
-    }
-
-    return null;
-  };
-
   return (
     <div style={cardStyle} onClick={onClick}>
-      {renderMedia()}
+ 
 
       <h4 style={titleStyle}>{title}</h4>
 

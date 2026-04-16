@@ -30,14 +30,25 @@ export default function TestimonialsWidget() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [showAll, setShowAll] = useState(false);
   const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
+  const [limit, setLimit] = useState(6);
+  const [mode, setMode] = useState<"grid" | "carousel">("carousel");
 
-  const limit = 6; // Default limit
   const urlLimit = showAll ? 50 : limit;
 
   /* ================== INIT ================== */
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setApiUrl(params.get("apiUrl") || "http://localhost:3000");
+    
+    const limitParam = params.get("limit");
+    if (limitParam) {
+      setLimit(parseInt(limitParam, 10));
+    }
+
+    const modeParam = params.get("mode");
+    if (modeParam === "grid" || modeParam === "carousel") {
+      setMode(modeParam);
+    }
 
     const themeParam = params.get("theme");
     if (themeParam === "dark" || themeParam === "light") {
@@ -83,46 +94,61 @@ export default function TestimonialsWidget() {
   }, [apiUrl, urlLimit]);
 
   /* ================== AUTO HEIGHT ================== */
-  useEffect(() => {
-    const sendHeight = () => {
-      const height = document.body.scrollHeight;
-      window.parent.postMessage(
-        { type: "WIDGET_HEIGHT", height },
-        "*"
-      );
-    };
+ useEffect(() => {
+  const sendHeight = () => {
+    const height = document.documentElement.scrollHeight;
 
-    sendHeight();
+    const params = new URLSearchParams(window.location.search);
+    const widgetId = params.get("widgetId");
 
-    const observer = new ResizeObserver(sendHeight);
-    observer.observe(document.body);
+    window.parent.postMessage(
+      {
+        type: "WIDGET_HEIGHT",
+        height,
+        id: widgetId,
+      },
+      "*"
+    );
+  };
 
-    return () => observer.disconnect();
-  }, [testimonials, showAll, selectedTestimonial]);
+  sendHeight();
+
+  const observer = new ResizeObserver(sendHeight);
+  observer.observe(document.body);
+
+  window.addEventListener("load", sendHeight);
+  window.addEventListener("resize", sendHeight);
+
+  // 👇 IMPORTANTE: por contenido async
+  setTimeout(sendHeight, 300);
+  setTimeout(sendHeight, 800);
+
+  return () => {
+    observer.disconnect();
+    window.removeEventListener("load", sendHeight);
+    window.removeEventListener("resize", sendHeight);
+  };
+}, [testimonials, showAll, selectedTestimonial]);
 
   /* ================== HANDLE CLICK ================== */
-  const handleTestimonialClick = async (testimonial: Testimonial) => {
-    // Register click and open modal
-    try {
-      await fetch(
-        `${apiUrl}/api/public/testimonials/${testimonial.id}/clicks`,
-        { method: "POST" }
-      );
+  const handleTestimonialClick = (testimonial: Testimonial) => {
+    // Register view (sin esperar)
+    fetch(
+      `${apiUrl}/api/public/testimonials/${testimonial.id}/views`,
+      { method: "POST" }
+    ).catch((err) => console.error("Error registering view:", err));
 
-      // Update local state
-      setTestimonials((prev) =>
-        prev.map((t) =>
-          t.id === testimonial.id ? { ...t, clicks: t.clicks + 1 } : t
-        )
-      );
-    } catch (err) {
-      console.error("Error registering click:", err);
-    }
+    // Update local state
+    setTestimonials((prev) =>
+      prev.map((t) =>
+        t.id === testimonial.id ? { ...t, views: t.views + 1 } : t
+      )
+    );
 
     // Open modal with updated testimonial
     setSelectedTestimonial({
       ...testimonial,
-      clicks: testimonial.clicks + 1,
+      views: testimonial.views + 1,
     });
   };
 
@@ -165,6 +191,7 @@ export default function TestimonialsWidget() {
       <TestimonialsGrid
         testimonials={testimonials}
         theme={theme}
+        mode={mode}
         onTestimonialClick={handleTestimonialClick}
       />
       {!showAll && testimonials.length > limit && (
@@ -377,7 +404,7 @@ export default function TestimonialsWidget() {
                     : "1px solid #e5e7eb",
               }}
             >
-              <span>👆 {selectedTestimonial.clicks} clicks</span>
+              <span>�️ {selectedTestimonial.views} vistas</span>
             </div>
           </div>
         </div>

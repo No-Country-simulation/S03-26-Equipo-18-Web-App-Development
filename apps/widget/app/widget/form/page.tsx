@@ -33,12 +33,20 @@ export default function WidgetForm() {
   /* ================== AUTO HEIGHT ================== */
   useEffect(() => {
     const sendHeight = () => {
-      const height = document.body.scrollHeight;
-      window.parent.postMessage(
-        { type: "WIDGET_HEIGHT", height },
-        "*"
-      );
-    };
+  const height = document.body.scrollHeight;
+
+  const params = new URLSearchParams(window.location.search);
+  const widgetId = params.get("widgetId"); // 👈 ESTO FALTA
+
+  window.parent.postMessage(
+    {
+      type: "WIDGET_HEIGHT",
+      height,
+      id: widgetId, // 👈 CLAVE
+    },
+    "*"
+  );
+};
 
     sendHeight();
 
