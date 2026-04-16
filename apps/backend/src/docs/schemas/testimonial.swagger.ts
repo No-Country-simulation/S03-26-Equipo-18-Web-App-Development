@@ -178,6 +178,129 @@
  *           example:
  *             - tag1
  *             - tag2
+ *
+ *     PublicCategory:
+ *       type: object
+ *       nullable: true
+ *       properties:
+ *         id:
+ *           type: string
+ *           example: cmcat123456
+ *         name:
+ *           type: string
+ *           example: Product
+ *         slug:
+ *           type: string
+ *           example: product
+ *
+ *     PublicTag:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           example: cmtag123456
+ *         name:
+ *           type: string
+ *           example: Productivity
+ *         slug:
+ *           type: string
+ *           example: productivity
+ *
+ *     PublicTestimonialTagItem:
+ *       type: object
+ *       properties:
+ *         tag:
+ *           $ref: '#/components/schemas/PublicTag'
+ *
+ *     PublicTestimonial:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           example: cmtest123456
+ *         title:
+ *           type: string
+ *           example: Great experience with the platform
+ *         content:
+ *           type: string
+ *           example: The platform improved our workflow and made testimonial management much easier.
+ *         authorName:
+ *           type: string
+ *           example: Jane Smith
+ *         authorPosition:
+ *           type: string
+ *           nullable: true
+ *           example: Marketing Manager
+ *         authorCompany:
+ *           type: string
+ *           nullable: true
+ *           example: Acme Corp
+ *         type:
+ *           type: string
+ *           enum:
+ *             - TEXT
+ *             - IMAGE
+ *             - VIDEO
+ *         imageUrl:
+ *           type: string
+ *           nullable: true
+ *           example: https://cdn.example.com/testimonials/image-1.jpg
+ *         videoUrl:
+ *           type: string
+ *           nullable: true
+ *           example: https://cdn.example.com/testimonials/video-1.mp4
+ *         youtubeId:
+ *           type: string
+ *           nullable: true
+ *           example: dQw4w9WgXcQ
+ *         views:
+ *           type: integer
+ *           example: 12
+ *         clicks:
+ *           type: integer
+ *           example: 4
+ *         isFeatured:
+ *           type: boolean
+ *           example: true
+ *         publishedAt:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         category:
+ *           $ref: '#/components/schemas/PublicCategory'
+ *         testimonialTags:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/PublicTestimonialTagItem'
+ *
+ *     PublicPublishedTestimonialsListResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: true
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/PublicTestimonial'
+ *         meta:
+ *           type: object
+ *           properties:
+ *             total:
+ *               type: integer
+ *               example: 25
+ *             page:
+ *               type: integer
+ *               example: 1
+ *             limit:
+ *               type: integer
+ *               example: 10
+ *             totalPages:
+ *               type: integer
+ *               example: 3
  */
 
 /**
@@ -220,6 +343,86 @@
  *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Internal server error
+ */
+
+/**
+ * @openapi
+ * /api/public/testimonials/published:
+ *   get:
+ *     summary: List published testimonials
+ *     description: Returns a paginated list of testimonials with PUBLISHED status only.
+ *     tags:
+ *       - Public Testimonials
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - in: query
+ *         name: categoryId
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: type
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - TEXT
+ *             - IMAGE
+ *             - VIDEO
+ *       - in: query
+ *         name: featured
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *       - in: query
+ *         name: q
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: sortBy
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - publishedAt
+ *             - createdAt
+ *             - views
+ *             - clicks
+ *           default: publishedAt
+ *       - in: query
+ *         name: sortOrder
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - asc
+ *             - desc
+ *           default: desc
+ *     responses:
+ *       200:
+ *         description: Published testimonials retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PublicPublishedTestimonialsListResponse'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 
 /**
