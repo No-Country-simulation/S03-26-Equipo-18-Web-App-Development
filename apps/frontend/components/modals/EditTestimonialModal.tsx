@@ -128,7 +128,9 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
             router.refresh(); // Esto recargará los datos de la página automáticamente
        
         } else {
-            toast.error(result.error, { id: loadingToast });
+            toast.error(result.error || "No se pudo actualizar el testimonio", {
+  id: loadingToast,
+});
         }
     };
 

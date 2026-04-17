@@ -166,12 +166,6 @@ console.log("Dashboard data:", dashboardData);
         />
       </div>
 
-      <DashboardChartsWrapper
-        lineData={dashboardData.lineChartData}
-        pieData={dashboardData.pieChartData}
-        engagementRate={dashboardData.engagementRate}
-        conversionRate={dashboardData.conversionRate}
-      />
 
       <div className="flex flex-col-reverse lg:flex-row gap-10 mt-10 bg-cards p-6 rounded-3xl border border-border">
         <div className="mt-10 lg:w-3/5 order-last lg:order-0">

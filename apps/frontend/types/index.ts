@@ -1,5 +1,7 @@
 // types/index.ts
 
+import { DashboardTag } from "./dashboard";
+
 
 export type TestimonialCardProps = {
   id: string;
@@ -7,10 +9,9 @@ export type TestimonialCardProps = {
   content: string;
   category: string;
   status: string;
-  tags: Tag[];
+  tags: DashboardTag[];
   rating?: number;
   location?: string | null;
-  data: string;
 };
 
 export interface UserFromDB {

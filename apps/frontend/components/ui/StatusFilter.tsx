@@ -29,7 +29,7 @@ export const StatusFilters = () => {
   };
 
   return (
-    <div className="flex min-w-75 justify-center items-center p-1 bg-txtPrimary rounded-2xl w-fit mb-6 border border-border">
+    <div className="flex min-w-75 justify-center align-center items-center p-1 bg-txtPrimary rounded-2xl w-fit mb-6 border border-border">
       {statuses.map((s) => (
         <button
           key={s.value}

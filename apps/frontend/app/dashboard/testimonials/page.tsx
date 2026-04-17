@@ -61,7 +61,7 @@ const Testimonials = () => {
   }
 
   return (
-    <div>
+    <div className="justify-items-center min-h-screen bg-dashboard">
       <TituloPage
         titulo="Gestor de Testimonios"
         descripcion={
@@ -73,7 +73,7 @@ const Testimonials = () => {
 
       <StatusFilters />
 
-      <div className="px-8 mb-6">
+      <div className="px-8 mb-6 max-w-7xl mx-auto">
         <SearchInput />
       </div>
 

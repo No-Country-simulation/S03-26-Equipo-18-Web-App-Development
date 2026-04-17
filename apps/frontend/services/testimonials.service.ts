@@ -5,6 +5,7 @@ import {
   TestimonialCardProps,
   Category,
   Tag,
+  UpdateTestimonialPayload,
 } from "@/types";
 
 type GetTestimonialsParams = {
@@ -73,5 +74,41 @@ export const getTags = async (): Promise<Tag[]> => {
   } catch (error) {
     logAxiosError("Error al obtener tags", error);
     return [];
+  }
+};
+
+
+
+
+export const updateTestimonial = async (
+  id: string,
+  payload: UpdateTestimonialPayload
+): Promise<{ success: boolean; data?: any; error?: string }> => {
+  try {
+    const response = await api.put(`/api/private/testimonials/${id}`, payload);
+
+    console.log("Testimonio actualizado:", response.data);
+    return {
+      success: true,
+      data: response.data?.data,
+    };
+  } catch (error) {
+    logAxiosError("Error al actualizar testimonio", error);
+
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        error:
+          error.response?.data?.error?.message ||
+          error.response?.data?.message ||
+          error.message ||
+          "No se pudo actualizar el testimonio",
+      };
+    }
+
+    return {
+      success: false,
+      error: "No se pudo actualizar el testimonio",
+    };
   }
 };
