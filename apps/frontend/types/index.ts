@@ -10,6 +10,7 @@ export type TestimonialCardProps = {
   tags: Tag[];
   rating?: number;
   location?: string | null;
+  data: string;
 };
 
 export interface UserFromDB {
@@ -21,6 +22,7 @@ export interface UserFromDB {
   createdAt: string;
   organization: string | null;
   adminId: string | null;
+  apiKey?: string | null;
 }
 
 export type ApiResponse<T> = {
