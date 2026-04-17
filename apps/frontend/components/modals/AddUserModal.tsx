@@ -77,7 +77,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }: AddUserModalProps) => {
               <input
                 {...register("name")}
                 placeholder="Ej: Jane Doe"
-                className="w-full p-4 bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-primary outline-none text-sm font-semibold"
+                className="w-full p-4 text-medium bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-primary outline-none text-sm font-semibold"
               />
               {errors.name && (
                 <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
@@ -92,7 +92,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }: AddUserModalProps) => {
                 type="email"
                 {...register("email")}
                 placeholder="janedoe@edutech.com"
-                className="w-full p-4 bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-primary outline-none text-sm font-semibold"
+                className="w-full p-4 text-medium bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-primary outline-none text-sm font-semibold"
               />
               {errors.email && (
                 <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
@@ -107,7 +107,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }: AddUserModalProps) => {
                 type="password"
                 {...register("password")}
                 placeholder="Mínimo 6 caracteres"
-                className="w-full p-4 bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-primary outline-none text-sm font-semibold"
+                className="w-full p-4 text-medium bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-primary outline-none text-sm font-semibold"
               />
               {errors.password && (
                 <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
@@ -120,7 +120,7 @@ const AddUserModal = ({ isOpen, onClose, onSubmit }: AddUserModalProps) => {
               </label>
               <select
                 {...register("role")}
-                className="w-full p-4 bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-primary outline-none text-sm font-semibold"
+                className="w-full p-4  text-medium bg-chalk rounded-2xl border-none focus:ring-2 focus:ring-primary outline-none text-sm font-semibold"
               >
                 <option value="EDITOR">Editor</option>
                 <option value="ADMIN">Administrador</option>
