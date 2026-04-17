@@ -1,21 +1,18 @@
 // types/index.ts
-export interface Tag {
-  id: string;  
-  name: string;
-}
 
-export interface TestimonialCardProps {
-  id: string; 
+
+export type TestimonialCardProps = {
+  id: string;
   userName: string;
   content: string;
-  rating: number;
-  location?: string | null;
   category: string;
   status: string;
   tags: Tag[];
-  authorCompany?: string | null; }
+  rating?: number;
+  location?: string | null;
+};
 
-  export interface UserFromDB {
+export interface UserFromDB {
   id: string;
   name: string;
   email: string;
@@ -25,3 +22,37 @@ export interface TestimonialCardProps {
   organization: string | null;
   adminId: string | null;
 }
+
+export type ApiResponse<T> = {
+  success: boolean;
+  data: T;
+  meta?: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+};
+
+export type Category = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  isSystem: boolean;
+  createdAt: string;
+  updatedAt: string;
+  _count?: {
+    testimonials: number;
+  };
+};
+
+export type Tag = {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt: string;
+  testimonialTags?: {
+    testimonialId: string;
+  }[];
+};

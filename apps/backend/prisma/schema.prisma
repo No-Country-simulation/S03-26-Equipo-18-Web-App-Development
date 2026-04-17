@@ -101,7 +101,6 @@ model Category {
   isSystem     Boolean       @default(false)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  
   testimonials Testimonial[]
 }
 

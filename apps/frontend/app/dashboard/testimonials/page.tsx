@@ -3,14 +3,17 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getAllTestimonials, getCategories, getTags } from "@/services/testimonials.service";
-import { TestimonialCardProps } from "@/types";
+import {
+  getAllTestimonials,
+  getCategories,
+  getTags,
+} from "@/services/testimonials.service";
+import { TestimonialCardProps, Category, Tag } from "@/types";
 
 import TituloPage from "@/components/tituloPage";
 import TestimonialsClient from "@/components/TestimonialsClient";
 import SearchInput from "@/components/ui/SearchInput";
 import { StatusFilters } from "@/components/ui/StatusFilter";
-
 
 const Testimonials = () => {
   const { user } = useAuth();
@@ -18,8 +21,8 @@ const Testimonials = () => {
   const searchParams = useSearchParams();
 
   const [testimonials, setTestimonials] = useState<TestimonialCardProps[]>([]);
-  const [categories, setCategories] = useState([]);
-  const [allTags, setAllTags] = useState([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [allTags, setAllTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
 
   const query = searchParams.get("query") || "";
@@ -32,30 +35,27 @@ const Testimonials = () => {
     }
 
     const loadPageData = async () => {
-          setLoading(true);
-          try {
-            // Ahora usamos nuestros servicios de Axios
-            const [resT, resC, resTags] = await Promise.all([
-              getAllTestimonials({ query, status }),
-              getCategories(),
-              getTags(),
-            ]);
+      setLoading(true);
+      try {
+        const [resT, resC, resTags] = await Promise.all([
+          getAllTestimonials({ query, status }),
+          getCategories(),
+          getTags(),
+        ]);
 
-            if (resT.success) setTestimonials(resT.data);
-            setCategories(resC);
-            setAllTags(resTags);
+        setTestimonials(resT);
+        setCategories(resC);
+        setAllTags(resTags);
+      } catch (error) {
+        console.error("Error en la carga masiva:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-          } catch (error) {
-            console.error("Error en la carga masiva:", error);
-          } finally {
-            setLoading(false);
-          }
-        };
+    loadPageData();
+  }, [user, query, status, router]);
 
-        loadPageData();
-  }, [user, query, status]);
-
- 
   if (!user || loading) {
     return <div className="p-8">Cargando...</div>;
   }

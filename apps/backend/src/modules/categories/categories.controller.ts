@@ -13,6 +13,7 @@ import {
 } from "./categories.service";
 
 export async function getCategories(_req: Request, res: Response, next: NextFunction) {
+  console.log("Fetching categories...");
   try {
     const categories = await findAllCategories();
 

@@ -13,6 +13,7 @@ import categoriesRouter from "./modules/categories/categories.routes";
 import usersRouter from "./modules/users/users.routes";
 
 import tagRouter from "./modules/tag/tag.router";
+import dashboardRoutes from "./modules/dashboard/dashboard.routes";
 
 
 const app = express();
@@ -54,6 +55,7 @@ app.use("/api/private/testimonials", testimoniosRouter);
 app.use("/api/public/testimonials", publicTestimoniosRouter);
 app.use('/api/private/categories', categoriesRouter);
 app.use("/api/private/tags", tagRouter);
+app.use("/api/private/dashboard", dashboardRoutes);
 
 app.use(errorHandler);
 

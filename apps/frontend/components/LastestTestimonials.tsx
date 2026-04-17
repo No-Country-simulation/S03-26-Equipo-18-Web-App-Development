@@ -1,25 +1,9 @@
-import  TestimonialCard  from "@/components/TestimonialCard"
-import Link from "next/link"
-
-interface Tag {
-  id: string;
-  name: string;
-}
-
-interface Testimonial {
-  id: string;
-  userName: string;
-  content: string;
-  rating: number;
-  location?: string | null;
-  status: string;
-  category: { name: string }; 
-  tags: Tag[];
-}
-
+import TestimonialCard from "@/components/TestimonialCard";
+import Link from "next/link";
+import type { DashboardLatestTestimonial } from "@/types/dashboard";
 
 interface LastestTestimonialsProps {
-  testimonials: Testimonial[];
+  testimonials: DashboardLatestTestimonial[];
 }
 
 const LastestTestimonials = ({ testimonials }: LastestTestimonialsProps) => {
@@ -27,27 +11,26 @@ const LastestTestimonials = ({ testimonials }: LastestTestimonialsProps) => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-xl font-bold text-chalk">Testimonios recientes</h3>
-        <Link 
-            href="/dashboard/testimonials"
-            className="text-sm font-bold text-primary bg-dark py-2 px-3 rounded-3xl border border-border hover:underline">
+        <Link
+          href="/dashboard/testimonials"
+          className="text-sm font-bold text-primary bg-dark py-2 px-3 rounded-3xl border border-border hover:underline"
+        >
           Ver todos
         </Link>
       </div>
 
-      {/* Grid que muestra los últimos testimonios */}
       <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
         {testimonials.length > 0 ? (
-          testimonials.slice(0,4).map((t) => (
+          testimonials.slice(0, 4).map((t) => (
             <div key={t.id} className="h-full">
-              <TestimonialCard 
-                id={t.id} 
+              <TestimonialCard
+                id={t.id}
                 userName={t.userName}
                 content={t.content}
-                rating={t.rating || 5}
-                location={t.location}
                 category={t.category?.name || "Sin categoría"}
                 status={t.status}
-                tags={t.tags || []}              />
+                tags={t.tags || []}
+              />
             </div>
           ))
         ) : (
@@ -57,7 +40,7 @@ const LastestTestimonials = ({ testimonials }: LastestTestimonialsProps) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LastestTestimonials
+export default LastestTestimonials;

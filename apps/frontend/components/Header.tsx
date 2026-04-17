@@ -1,16 +1,24 @@
 "use client";
+
 import { MdPerson } from "react-icons/md";
 import LogoutButton from "@/components/LogoutButton";
-import { useAuth } from "@/hooks/useAuth"; // tu hook propio
+import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
-  const { user } = useAuth(); // obtenés info de tu usuario logueado
+  const { user, loading } = useAuth();
 
-  if (!user) return null; // no mostrar header si no hay usuario
+  if (loading) {
+    return (
+      <header className="h-16 bg-sidebar flex items-center justify-end px-8 gap-6 border-b border-border">
+        <div className="text-sm text-txtSecondary">Cargando...</div>
+      </header>
+    );
+  }
+
+  if (!user) return null;
 
   return (
     <header className="h-16 bg-sidebar flex items-center justify-end px-8 gap-6 border-b border-border">
-      {/* Perfil de Usuario */}
       <div className="flex items-center gap-3 pl-6 border-l border-border">
         <div className="text-right">
           <p className="text-m font-bold text-txtPrimary leading-none">
@@ -26,7 +34,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Botón Salir */}
       <LogoutButton />
     </header>
   );

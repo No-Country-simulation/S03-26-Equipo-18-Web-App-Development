@@ -21,8 +21,8 @@ const AuthenticityPie = dynamic(() => import("./DashboardCharts").then(mod => mo
 interface ChartsWrapperProps {
   lineData: any[];
   pieData: any[];
-  engagementRate: string;
-  conversionRate: string;
+  engagementRate: any;
+  conversionRate: any;
 }
 
 export default function DashboardChartsWrapper({ 

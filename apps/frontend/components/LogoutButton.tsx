@@ -1,19 +1,25 @@
 "use client";
 
-import { signOut } from "next-auth/react";
-import { MdLogout } from "react-icons/md";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 const LogoutButton = () => {
-  return (
-        <button 
-            onClick={() => signOut({ callbackUrl: "/login" })}
-            className="flex items-center gap-1 text-primary hover:text-red-600 transition-colors ml-2"
-            title="Cerrar sesión"
-          >
-            <MdLogout className="text-xl" />
-            <span className="text-m font-medium">Salir</span>
-        </button>
-  )
-}
+  const { logout } = useAuth();
+  const router = useRouter();
 
-export default LogoutButton
+  const handleLogout = () => {
+    logout();
+    router.replace("/login");
+  };
+
+  return (
+    <button
+      onClick={handleLogout}
+      className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+    >
+      Salir
+    </button>
+  );
+};
+
+export default LogoutButton;

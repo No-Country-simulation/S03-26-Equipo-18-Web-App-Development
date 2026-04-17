@@ -12,14 +12,14 @@ import {
   updateCategoryHandler,
 } from './categories.controller';
 
-const router = Router();
+const categoriesRouter = Router();
 
-router.use(authenticateJwt);
+categoriesRouter.use(authenticateJwt);
 
-router.get('/', authorizeRoles(Role.ADMIN, Role.EDITOR), getCategories);
-router.get('/:id', authorizeRoles(Role.ADMIN, Role.EDITOR), getCategoryById);
-router.post('/', authorizeRoles(Role.ADMIN), createCategoryHandler);
-router.patch('/:id', authorizeRoles(Role.ADMIN, Role.EDITOR), updateCategoryHandler);
-router.delete('/:id', authorizeRoles(Role.ADMIN), deleteCategoryHandler);
+categoriesRouter.get('/', authorizeRoles(Role.ADMIN, Role.EDITOR), getCategories);
+categoriesRouter.get('/:id', authorizeRoles(Role.ADMIN, Role.EDITOR), getCategoryById);
+categoriesRouter.post('/', authorizeRoles(Role.ADMIN), createCategoryHandler);
+categoriesRouter.patch('/:id', authorizeRoles(Role.ADMIN, Role.EDITOR), updateCategoryHandler);
+categoriesRouter.delete('/:id', authorizeRoles(Role.ADMIN), deleteCategoryHandler);
 
-export default router;
+export default categoriesRouter;
