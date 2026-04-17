@@ -4,35 +4,30 @@ import { MdDeleteOutline, MdShield } from "react-icons/md";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { deleteUser } from "@/services/user.service";
+import { UserFromDB } from "@/types";
 
-interface UserFromDB {
-  id: string;
-  username: string;
-  email: string;
-  role: string;
-  isActive: boolean;
-  createdAt: string;
-  organization: string;
-  adminId: string | null;
+interface UserTableProps {
+  users: UserFromDB[];
+  onDeleteSuccess: (id: string) => void;
 }
 
-const UserTable = ({ users }: { users: UserFromDB[] }) => {
-  const router = useRouter();
 
-  const handleDelete = async (id: string, username: string | null) => {
-    const confirm = window.confirm(
-      `¿Estás seguro de que deseas eliminar a ${username || "este usuario"}?`
+const UserTable = ({ users, onDeleteSuccess }: UserTableProps) => {
+
+  const handleDelete = async (id: string, name: string | null) => {
+    const confirmDelete = window.confirm(
+      `¿Estás seguro de que deseas eliminar a ${name || "este usuario"}?`
     );
 
-    if (!confirm) return;
+    if (!confirmDelete) return;
 
-    const result = await deleteUser(id); // <-- usamos el service
+    const result = await deleteUser(id, name);
 
     if (result.success) {
       toast.success("Usuario eliminado correctamente");
-      router.refresh(); // refresca la lista
+      onDeleteSuccess(id);
     } else {
-      toast.error(result.error);
+      toast.error(result.error || "No se pudo eliminar el usuario");
       console.error("Error al borrar usuario:", result.error);
     }
   };
@@ -58,12 +53,12 @@ const UserTable = ({ users }: { users: UserFromDB[] }) => {
               <td className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-brand/10 text-primary flex items-center justify-center font-bold text-sm border border-brand/20">
-                    {user.username
-                      ? user.username.substring(0, 2).toUpperCase()
+                    {user.name
+                      ? user.name.substring(0, 2).toUpperCase()
                       : "U"}
                   </div>
                   <span className="font-semibold text-dark">
-                    {user.username || "Sin nombre"}
+                    {user.name || "Sin nombre"}
                   </span>
                 </div>
               </td>
@@ -85,7 +80,7 @@ const UserTable = ({ users }: { users: UserFromDB[] }) => {
               </td>
               <td className="p-4 text-right">
                 <button
-                  onClick={() => handleDelete(user.id, user.username)}
+                  onClick={() => handleDelete(user.id, user.name)}
                   className="text-medium hover:text-red-500 transition-colors p-2"
                 >
                   <MdDeleteOutline size={18} />

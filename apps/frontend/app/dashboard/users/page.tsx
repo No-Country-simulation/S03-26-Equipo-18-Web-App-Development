@@ -2,63 +2,72 @@
 import TituloPage from "@/components/tituloPage";
 import UserTable from "@/components/UserTable";
 import BtnNewUser from "@/components/BtnNewUser";
-import { useAuth } from "@/hooks/useAuth"; 
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { api } from "@/lib/api";
+import type { UserFromDB } from "../../../types/index";
 
 const Users = () => {
   const { user } = useAuth();
   const router = useRouter();
 
-  if (!user) {
-    router.push("/login");
-    return null;
-  }
-
-  // Seguridad de rol: solo ADMIN
-  if (user.role !== "ADMIN") {
-    router.push("/dashboard");
-    return null;
-  }
-
-  const masterAdminId = user.id;
-
-  const [usersList, setUsersList] = useState<any[]>([]);
+  const [usersList, setUsersList] = useState<UserFromDB[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/users?adminId=${masterAdminId}`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setUsersList(data);
-        } else {
-          console.warn("⚠️ El Backend respondió con error o no existe la ruta.");
-        }
-      } catch (error) {
-        console.error("🌐 Error de conexión con el servidor:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUsers();
-  }, [masterAdminId]);
+  const fetchUsers = useCallback(async () => {
+    try {
+      const response = await api.get("/users");
+      setUsersList(response.data.data);
+    } catch (error) {
+      console.error("🌐 Error al obtener usuarios:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
+  useEffect(() => {
+    if (!user) return;
+
+    if (user.role !== "ADMIN") {
+      router.push("/dashboard");
+      return;
+    }
+
+    fetchUsers();
+  }, [user, router, fetchUsers]);
+
+  useEffect(() => {
+    if (user === null) {
+      router.push("/login");
+    }
+  }, [user, router]);
+
+  const handleUserDeleted = async () => {
+    await fetchUsers();
+  };
+
+  const handleUserCreated = async () => {
+    await fetchUsers();
+  };
+
+  if (!user) return <div>Cargando sesión...</div>;
   if (loading) return <div>Cargando usuarios...</div>;
 
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <TituloPage titulo="Usuarios" descripcion="Gestiona los usuarios de tu CMS." />
+          <TituloPage
+            titulo="Usuarios"
+            descripcion="Gestiona los usuarios de tu CMS."
+          />
         </div>
-        <BtnNewUser />{/* <BtnNewUser adminId={masterAdminId} /> */}
+        <BtnNewUser onUserCreated={handleUserCreated} />
       </div>
+
       <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-chalk">
-        <UserTable users={usersList} />
+        <UserTable users={usersList} onDeleteSuccess={handleUserDeleted} />
       </div>
     </div>
   );
