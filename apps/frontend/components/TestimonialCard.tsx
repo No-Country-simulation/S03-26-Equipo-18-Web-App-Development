@@ -4,6 +4,7 @@ import { TestimonialCardProps } from "@/types"; // Importas la interfaz
 
 
 export default function TestimonialCard({ 
+  id,
   userName, 
   content, 
   rating, 
@@ -65,17 +66,34 @@ export default function TestimonialCard({
       <div className="mt-6 pt-4 border-t border-gray-100 space-y-4">
         
         {/* Tags con el estilo de fondo oscuro de tu Figma */}
-        <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2">
+            {tags.map((t: any, index: number) => {
+              // Si por algún motivo el adaptador no funcionó, extraemos el nombre manualmente
+              const tagName = t.tag?.name || t.name || "Tag";
+              const tagId = t.tag?.id || t.id || `tag-${index}`;
+
+              return (
+                <span 
+                  key={tagId} 
+                  className="bg-dark text-white text-[9px] px-2 py-0.5 rounded-md flex items-center gap-1 font-bold uppercase tracking-tighter"
+                >
+                  <MdLabel size={10} />
+                  {tagName}
+                </span>
+              );
+            })}
+          </div>
+        {/* <div className="flex flex-wrap gap-2">
           {(tags || []).map((tag, index) => (
-  <span 
-    key={index} 
-    className="bg-dark text-white text-[9px] px-2 py-0.5 rounded-md flex items-center gap-1 font-bold uppercase tracking-tighter"
-  >
-    <MdLabel size={10} />
-    {tag.name}
-  </span>
+          <span 
+            key={index} 
+            className="bg-dark text-white text-[9px] px-2 py-0.5 rounded-md flex items-center gap-1 font-bold uppercase tracking-tighter"
+          >
+            <MdLabel size={10} />
+            {tag.name}
+          </span>
 ))}
-        </div>
+        </div> */}
 
         <div className="flex justify-between items-center">
           {/* Estrellas: creo un arreglo con 5 espacios vacíos */}

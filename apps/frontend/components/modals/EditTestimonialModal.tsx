@@ -91,19 +91,42 @@ const EditTestimonialModal = ({ testimonial, isOpen, onClose, categories, allTag
 
         // 💡 TRADUCCIÓN INVERSA: Preparamos el payload para el Backend
         const backendPayload = {
+            // Campos que vienen del formulario
             status: data.status, 
             categoryId: data.categoryId,
+            tagIds: data.tagIds || [], 
+
+            // Campos obligatorios para el PUT (sacados del objeto original)
+            // Usamos los nombres que el BACK espera (authorName, etc)
+            title:  "Título Actualizado", // El schema pide title
+            content: testimonial.content,             // El schema pide content
+            authorName: testimonial.userName,         // El schema pide authorName
+            
+            // Opcionales que ayudan a mantener la integridad
+            authorCompany: testimonial.location, 
             adminId: user?.id,
-            tagIds: data.tagIds, 
-            //newTags: newTagsRaw
         };
 
         const result = await updateTestimonial(testimonial.id, backendPayload);
 
         if (result.success) {
             toast.success("¡Testimonio actualizado!", { id: loadingToast });
+
+            const selectedCategory = categories.find(c => c.id === data.categoryId);
+
+            const selectedTags = allTags?.filter(t => data.tagIds.includes(t.id)) || [];
+
+            if (typeof (window as any).onUpdateSuccess === "function") {
+             (window as any).onUpdateSuccess(testimonial.id, {
+                status: data.status,
+                category: selectedCategory?.name || "General",
+                tags: selectedTags
+            });
+        }
+
             onClose();
             router.refresh(); // Esto recargará los datos de la página automáticamente
+       
         } else {
             toast.error(result.error, { id: loadingToast });
         }
